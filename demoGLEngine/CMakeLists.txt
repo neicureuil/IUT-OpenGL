@@ -19,6 +19,8 @@ set(SRC
 	${SRC_DIR}/myapp.cpp
 	${SRC_DIR}/glfwEventWrapper.cpp
 	${SRC_DIR}/main.cpp
+	${SRC_DIR}/particleSystem.cpp
+	${SRC_DIR}/utils.cpp
 )
 
 
@@ -26,6 +28,9 @@ set(HEADER
 	${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/config.hpp.in
 	${INC_DIR}/${PROJECT_NAME}/myapp.hpp
 	${INC_DIR}/${PROJECT_NAME}/glfwEventWrapper.hpp
+	${INC_DIR}/${PROJECT_NAME}/particle.hpp
+	${INC_DIR}/${PROJECT_NAME}/particleSystem.hpp
+	${INC_DIR}/${PROJECT_NAME}/utils.hpp
 )
 
 set(RESOURCE_FILES	
@@ -39,6 +44,8 @@ set(RESOURCE_FILES
 	${PROJECT_SOURCE_DIR}/resources/shaders/foggyColorScreenShader.frag
 	${PROJECT_SOURCE_DIR}/resources/shaders/depthFramebuffersScreen.frag
 	${PROJECT_SOURCE_DIR}/resources/shaders/framebuffersScreen.vert
+	${PROJECT_SOURCE_DIR}/resources/shaders/particle.frag
+	${PROJECT_SOURCE_DIR}/resources/shaders/particle.vert
 )
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/resources" PREFIX "Resources Files" FILES ${RESOURCE_FILES})

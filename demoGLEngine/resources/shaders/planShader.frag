@@ -29,8 +29,7 @@ in vec3 normalVec;
 in vec3 fragPos; 
 in vec2 texCoord;
 
-void main()
-{
+void main() {
     // Ambiant
     vec3 ambient = light.ambient * objectColor * lightColor ;
 
