@@ -21,6 +21,7 @@ set(SRC
 	${SRC_DIR}/main.cpp
 	${SRC_DIR}/particleSystem.cpp
 	${SRC_DIR}/utils.cpp
+	${SRC_DIR}/offLoader.cpp
 )
 
 
@@ -31,6 +32,7 @@ set(HEADER
 	${INC_DIR}/${PROJECT_NAME}/particle.hpp
 	${INC_DIR}/${PROJECT_NAME}/particleSystem.hpp
 	${INC_DIR}/${PROJECT_NAME}/utils.hpp
+	${INC_DIR}/${PROJECT_NAME}/offLoader.hpp
 )
 
 set(RESOURCE_FILES	

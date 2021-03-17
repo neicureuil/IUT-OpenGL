@@ -11,6 +11,8 @@
 #include "glengine/texture.hpp"
 #include "glengine/glmesh.hpp"
 
+#include "offLoader.hpp"
+
 #include <unordered_map>
 
 

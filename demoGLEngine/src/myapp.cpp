@@ -181,6 +181,10 @@ void MyApp::buildGeometry() {
 
 	meshes["box"] = glMesh(cubeVertices, cubeIndices, GL_STATIC_DRAW);
 
+	OFFObject* target = OFFLoader::loadFile(std::string(_resources_directory).append("objects/100x100pointsUV.off").c_str());
+	meshes["target"] = glMesh(target->vertices, {}, target->uvs, target->triangles, GL_STATIC_DRAW);
+	delete target;
+
 	// load and create a texture 
 	// -------------------------
 	textures["textureDiffuse"] = Texture(std::string(_resources_directory).append("textures/container2_gris.png").c_str());
@@ -576,6 +580,11 @@ void MyApp::renderScene() {
 	const glMesh& ground = meshes["ground"];
 	ground.bind();
 	ground.render();
+
+
+	meshes["target"].bind();
+	boxShader.bind();
+	meshes["target"].render();
 }
 
 MyApp::~MyApp() {
