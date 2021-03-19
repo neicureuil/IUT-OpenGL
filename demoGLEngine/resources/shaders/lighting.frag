@@ -23,6 +23,7 @@ uniform Light light;
 uniform sampler2D textureDiffuse;
 uniform sampler2D textureSpecular;
 uniform sampler2D textureMask;
+uniform sampler2D textureNormal;
 
 in vec3 normalVec;
 in vec3 fragPos; 

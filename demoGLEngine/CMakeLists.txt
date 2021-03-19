@@ -48,6 +48,7 @@ set(RESOURCE_FILES
 	${PROJECT_SOURCE_DIR}/resources/shaders/framebuffersScreen.vert
 	${PROJECT_SOURCE_DIR}/resources/shaders/particle.frag
 	${PROJECT_SOURCE_DIR}/resources/shaders/particle.vert
+	${PROJECT_SOURCE_DIR}/resources/shaders/nightVisionScreen.frag
 )
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/resources" PREFIX "Resources Files" FILES ${RESOURCE_FILES})

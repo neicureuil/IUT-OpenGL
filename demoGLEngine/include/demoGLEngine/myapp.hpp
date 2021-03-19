@@ -29,7 +29,7 @@ public:
 	void loop();
 
 private:
-	enum class DisplayStyle { normal, depthBuffer, Foggy };
+	enum class DisplayStyle { normal, depthBuffer, Foggy, NightVision };
 
 	void update(const double& dt);
 	void frameBufferConfiguration();

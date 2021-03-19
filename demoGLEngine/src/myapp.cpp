@@ -99,6 +99,10 @@ void MyApp::processInput() {
 		displayState = DisplayStyle::Foggy;
 	}
 
+	if (glfwGetKey(window, GLFW_KEY_F4) == GLFW_PRESS) {
+		displayState = DisplayStyle::NightVision;
+	}
+
 	if (camera) {
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 			camera->ProcessKeyboard(Camera::Movement::FORWARD, deltaTime);
@@ -190,6 +194,7 @@ void MyApp::buildGeometry() {
 	textures["textureDiffuse"] = Texture(std::string(_resources_directory).append("textures/container2_gris.png").c_str());
 	textures["textureSpecular"] = Texture(std::string(_resources_directory).append("textures/container2_specular2.png").c_str());
 	textures["textureMask"] = Texture(std::string(_resources_directory).append("textures/container2_diffuse_mask.png").c_str());
+	textures["textureNormal"] = Texture(std::string(_resources_directory).append("textures/container2_normal.png").c_str());
 	
 	
 	// shader configuration
@@ -199,6 +204,7 @@ void MyApp::buildGeometry() {
 	boxShader.setInt("textureDiffuse", 0);
 	boxShader.setInt("textureSpecular", 1);
 	boxShader.setInt("textureMask", 2);
+	boxShader.setInt("textureNormal", 10);
 
 	// second, configure the light's VAO (VBO stays the same; the vertices are the same for the light object which is also a 3D cube)
 	meshes["lightProxy"] = glMesh(cubeVertices, cubeIndices, GL_STATIC_DRAW);
@@ -371,6 +377,12 @@ void MyApp::frameBufferConfiguration() {
 		std::string(_resources_directory).append("shaders/depthFramebuffersScreen.frag").c_str()
 	);	
 
+	shaders["nightVisionScreenShader"] = Shader(
+		std::string(_resources_directory).append("shaders/framebuffersScreen.vert").c_str(),
+		std::string(_resources_directory).append("shaders/nightVisionScreen.frag").c_str()
+	);
+
+
 	const Shader& foggyColorScreenShader = shaders["foggyColorScreenShader"];
 	foggyColorScreenShader.bind();
 	foggyColorScreenShader.setInt("screenTexture", 4);
@@ -393,6 +405,13 @@ void MyApp::frameBufferConfiguration() {
 	depthScreenShader.setInt("screenDepth", 5);
 	depthScreenShader.setFloat("viewPort.near", 0.1f);
 	depthScreenShader.setFloat("viewPort.far", 100.0f);
+
+	const Shader& nightVisionScreenShader = shaders["nightVisionScreenShader"];
+	nightVisionScreenShader.bind();
+	nightVisionScreenShader.setInt("screenTexture", 4);
+	nightVisionScreenShader.setFloat("viewPort.near", 0.1f);
+	nightVisionScreenShader.setFloat("viewPort.far", 100.0f);
+	nightVisionScreenShader.setInt("screenDepth", 5);
 }
 
 void MyApp::render() {
@@ -420,6 +439,9 @@ void MyApp::render() {
 	case DisplayStyle::Foggy:
 		shaders["foggyColorScreenShader"].bind();
 		break;
+	case DisplayStyle::NightVision:
+		shaders["nightVisionScreenShader"].bind();
+		break;
 	default:
 		shaders["colorScreenShader"].bind();
 		break;
@@ -445,6 +467,8 @@ void MyApp::renderScene() {
 	textures["textureSpecular"].bind(GL_TEXTURE1);
 	textures["textureMask"].bind(GL_TEXTURE2);
 	textures["ground"].bind(GL_TEXTURE3);
+
+	textures["textureNormal"].bind(GL_TEXTURE10);
 
 	// be sure to activate shader when setting uniforms/drawing objects
 	const Shader& boxShader = shaders["boxShader"];
@@ -581,10 +605,10 @@ void MyApp::renderScene() {
 	ground.bind();
 	ground.render();
 
-
+	/*
 	meshes["target"].bind();
 	boxShader.bind();
-	meshes["target"].render();
+	meshes["target"].render();*/
 }
 
 MyApp::~MyApp() {
