@@ -39,6 +39,8 @@ private:
 	void processInput();
 	void buildGeometry();
 	void initGLFWCallBack();
+
+	void shoot();
 	
 
 	int width;
@@ -51,8 +53,7 @@ private:
 	double lastFrame;
 	float lastX;
 	float lastY;
-	bool leftButtonPressed;
-	bool leftButtonReleased;
+	bool leftButtonPressed, leftButtonReleased;
 	bool firstMouse;
 	DisplayStyle displayState;
 

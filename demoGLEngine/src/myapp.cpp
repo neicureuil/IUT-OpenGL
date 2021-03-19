@@ -54,6 +54,10 @@ void MyApp::onMouseButton(int button, int action, int mods) {
 		leftButtonPressed = false;
 		leftButtonReleased = true;
 	}
+
+	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
+		shoot();
+	}
 }
 
 void MyApp::onMouseMove(double xpos, double ypos) {
@@ -118,7 +122,6 @@ void MyApp::processInput() {
 	}	
 }
 
-
 void MyApp::buildGeometry() {
 	shaders["boxShader"] = Shader(
 		std::string(_resources_directory).append("shaders/lighting.vert").c_str(),
@@ -128,6 +131,11 @@ void MyApp::buildGeometry() {
 	shaders["lightProxyShader"] = Shader(
 		std::string(_resources_directory).append("shaders/lightCube.vert").c_str(),
 		std::string(_resources_directory).append("shaders/lightCube.frag").c_str()
+	);
+
+	shaders["targetShader"] = Shader(
+		std::string(_resources_directory).append("shaders/target.vert").c_str(),
+		std::string(_resources_directory).append("shaders/target.frag").c_str()
 	);
 
 	std::vector<float> cubeVertices = {
@@ -196,9 +204,10 @@ void MyApp::buildGeometry() {
 	textures["textureMask"] = Texture(std::string(_resources_directory).append("textures/container2_diffuse_mask.png").c_str());
 	textures["textureNormal"] = Texture(std::string(_resources_directory).append("textures/container2_normal.png").c_str());
 	
+	textures["textureTarget"] = Texture(std::string(_resources_directory).append("textures/cible.png").c_str());
 	
 	// shader configuration
-   // --------------------
+	// --------------------
 	const Shader &boxShader = shaders["boxShader"];
 	boxShader.bind();
 	boxShader.setInt("textureDiffuse", 0);
@@ -234,10 +243,12 @@ void MyApp::buildGeometry() {
 	const Shader &groundShader = shaders["groundShader"];
 	groundShader.bind();
 	groundShader.setInt("ground", 3);
+
+	const Shader& targetShader = shaders["targetShader"];
+	targetShader.bind();
+	targetShader.setInt("textureTarget", 11);
+
 }
-
-
-
 
 void MyApp::loop() {
 	initGLFWCallBack();
@@ -277,8 +288,6 @@ void MyApp::loop() {
 
 	glfwTerminate();
 }
-
-
 
 void MyApp::update(const double& dt) {
 	// std::cout << "\r+";
@@ -409,9 +418,6 @@ void MyApp::frameBufferConfiguration() {
 	const Shader& nightVisionScreenShader = shaders["nightVisionScreenShader"];
 	nightVisionScreenShader.bind();
 	nightVisionScreenShader.setInt("screenTexture", 4);
-	nightVisionScreenShader.setFloat("viewPort.near", 0.1f);
-	nightVisionScreenShader.setFloat("viewPort.far", 100.0f);
-	nightVisionScreenShader.setInt("screenDepth", 5);
 }
 
 void MyApp::render() {
@@ -469,6 +475,7 @@ void MyApp::renderScene() {
 	textures["ground"].bind(GL_TEXTURE3);
 
 	textures["textureNormal"].bind(GL_TEXTURE10);
+	textures["textureTarget"].bind(GL_TEXTURE11);
 
 	// be sure to activate shader when setting uniforms/drawing objects
 	const Shader& boxShader = shaders["boxShader"];
@@ -605,10 +612,17 @@ void MyApp::renderScene() {
 	ground.bind();
 	ground.render();
 
-	/*
+	
+	const Shader &targetShader = shaders["targetShader"];
 	meshes["target"].bind();
-	boxShader.bind();
-	meshes["target"].render();*/
+	targetShader.bind();
+	targetShader.setMat4("projection", projection);
+	targetShader.setMat4("view", view);
+	model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(-10,3.5f,-10));
+	model = glm::scale(model, glm::vec3(0.07f));
+	targetShader.setMat4("model", model);
+	meshes["target"].render();
 }
 
 MyApp::~MyApp() {
@@ -625,3 +639,6 @@ void MyApp::onResize(int _width, int _height) {
 	frameBufferConfiguration();
 }
 
+void MyApp::shoot() {
+
+}

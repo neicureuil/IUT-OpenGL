@@ -30,8 +30,8 @@ OFFObject* OFFLoader::loadFile(const char* path) {
 		obj->vertices.push_back((float)x);
 		obj->vertices.push_back((float)y);
 		obj->vertices.push_back((float)z);
-		obj->uvs.push_back((float)u);
 		obj->uvs.push_back((float)v);
+		obj->uvs.push_back((float)u);
 	}
 
 	for (i = 0;i < nbfaces;i++)	{
@@ -47,5 +47,8 @@ OFFObject* OFFLoader::loadFile(const char* path) {
 	}
 
 	fclose(file);
+
+	std::reverse(obj->uvs.begin(), obj->uvs.end());
+
 	return obj;
 }
