@@ -5,6 +5,10 @@
 #include <glm/ext/vector_float3.hpp>
 
 #include <algorithm>
+#include <vector>
+
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 #include "glengine/shader.hpp"
 #include "bullet.hpp"

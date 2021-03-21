@@ -16,17 +16,43 @@ void BulletManager::init() {
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 	
-	static const GLfloat g_vertex_buffer_data[] = {
-		-0.5f, -0.5f, 0.0f,
-		0.5f, -0.5f, 0.0f,
-		-0.5f, 0.5f, 0.0f,
-		0.5f, 0.5f, 0.0f,
-	};
-	bulletVertices = 4;
+	std::vector<GLfloat> vertices;
+
+	int lats = 20;
+	int longs = 20;
+
+	for (int i = 0; i <= lats; i++) {
+		double lat0 = M_PI * (-0.5 + (double)(i - 1) / lats);
+		double z0 = sin(lat0);
+		double zr0 = cos(lat0);
 	
+		double lat1 = M_PI * (-0.5 + (double)i / lats);
+		double z1 = sin(lat1);
+		double zr1 = cos(lat1);
+
+		for (int j = 0; j <= longs; j++) {
+			double lng = 2 * M_PI * (double)(j - 1) / longs;
+			double x = cos(lng);
+			double y = sin(lng);
+
+			vertices.push_back(x * zr0);
+			vertices.push_back(y * zr0);
+			vertices.push_back(z0);
+
+			vertices.push_back(x * zr1);
+			vertices.push_back(y * zr1);
+			vertices.push_back(z1);
+		}
+	}
+
+
+
+
+	verticeCount = vertices.size();
+
 	glGenBuffers(1, &bulletVertices);
 	glBindBuffer(GL_ARRAY_BUFFER, bulletVertices);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GLfloat), &vertices[0], GL_STATIC_DRAW);
 
 	glGenBuffers(1, &bulletPositions);
 	glBindBuffer(GL_ARRAY_BUFFER, bulletPositions);
@@ -50,7 +76,7 @@ void BulletManager::update(double dt) {
 		if (bullets[i].life > 0) {
 			Bullet& b = bullets[i];
 			b.life -= dt;
-			b.pos += b.dir * (float)dt;
+			b.pos += b.dir * b.speed * (float)dt;
 
 			g_buller_positions[3 * bulletNumber + 0] = b.pos.x;
 			g_buller_positions[3 * bulletNumber + 1] = b.pos.y;
@@ -73,10 +99,11 @@ void BulletManager::render(glm::mat4 view, glm::mat4 proj) {
 	glBindBuffer(GL_ARRAY_BUFFER, bulletPositions);
 	glBufferData(GL_ARRAY_BUFFER, MAX_BULLETS * 3 * sizeof(GLfloat), g_buller_positions, GL_STREAM_DRAW);
 
-	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, bulletVertices, bulletNumber);
+	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, verticeCount, bulletNumber);
 }
 
 void BulletManager::addBullet(glm::vec3 pos, glm::vec3 dir) {
+	if (bulletNumber >= MAX_BULLETS) return;
 	bullets[bulletNumber].pos = pos;
 	bullets[bulletNumber].dir = dir;
 	bullets[bulletNumber].life = 5.0f;

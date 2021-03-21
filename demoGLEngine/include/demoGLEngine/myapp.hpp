@@ -52,7 +52,7 @@ private:
 	const char* title;
 	GLFWwindow* window;
 
-	static constexpr double MS_PER_UPDATE = 500.0*(1.0/1000.0);
+	static constexpr double MS_PER_UPDATE = 33.3*(1.0/1000.0);
 	double deltaTime;
 	double lastFrame;
 	float lastX;
