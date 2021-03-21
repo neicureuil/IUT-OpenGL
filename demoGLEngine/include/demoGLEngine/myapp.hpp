@@ -11,6 +11,7 @@
 #include "glengine/texture.hpp"
 #include "glengine/glmesh.hpp"
 
+#include "bulletManager.hpp"
 #include "offLoader.hpp"
 
 #include <unordered_map>
@@ -27,6 +28,9 @@ public:
 	void onResize(int _width, int _height);
 	
 	void loop();
+
+private:
+	BulletManager* bulletManager;
 
 private:
 	enum class DisplayStyle { normal, depthBuffer, Foggy, NightVision };

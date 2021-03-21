@@ -22,6 +22,7 @@ set(SRC
 	${SRC_DIR}/particleSystem.cpp
 	${SRC_DIR}/utils.cpp
 	${SRC_DIR}/offLoader.cpp
+	${SRC_DIR}/bulletManager.cpp
 )
 
 
@@ -33,6 +34,8 @@ set(HEADER
 	${INC_DIR}/${PROJECT_NAME}/particleSystem.hpp
 	${INC_DIR}/${PROJECT_NAME}/utils.hpp
 	${INC_DIR}/${PROJECT_NAME}/offLoader.hpp
+	${INC_DIR}/${PROJECT_NAME}/bullet.hpp
+	${INC_DIR}/${PROJECT_NAME}/bulletManager.hpp
 )
 
 set(RESOURCE_FILES	
@@ -51,6 +54,8 @@ set(RESOURCE_FILES
 	${PROJECT_SOURCE_DIR}/resources/shaders/nightVisionScreen.frag
 	${PROJECT_SOURCE_DIR}/resources/shaders/target.frag
 	${PROJECT_SOURCE_DIR}/resources/shaders/target.vert
+	${PROJECT_SOURCE_DIR}/resources/shaders/bullet.frag
+	${PROJECT_SOURCE_DIR}/resources/shaders/bullet.vert
 )
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/resources" PREFIX "Resources Files" FILES ${RESOURCE_FILES})

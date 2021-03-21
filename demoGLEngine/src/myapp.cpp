@@ -11,7 +11,7 @@
 
 MyApp::MyApp(int _width, int _height, const char* _title)
 	:width(_width), height(_height), title(_title), window(nullptr), framebuffer(0), textureColorbuffer(0), rbo(0),
-	camera(nullptr),
+	camera(nullptr), bulletManager(nullptr),
 	deltaTime(0.0f), lastFrame(0.0f), firstMouse(true),
 	lastX(0.0f), lastY(0.0f), leftButtonPressed(false), leftButtonReleased(false),
 	displayState(DisplayStyle::normal) {
@@ -138,6 +138,11 @@ void MyApp::buildGeometry() {
 		std::string(_resources_directory).append("shaders/target.frag").c_str()
 	);
 
+	shaders["bulletShader"] = Shader(
+		std::string(_resources_directory).append("shaders/bullet.vert").c_str(),
+		std::string(_resources_directory).append("shaders/bullet.frag").c_str()
+	);
+
 	std::vector<float> cubeVertices = {
 		// positions          // normals           // texture coords
 		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f, // 0  0
@@ -255,11 +260,13 @@ void MyApp::loop() {
 
 	// configure global opengl state
 	glEnable(GL_DEPTH_TEST);
-	// glViewport(0, 0, width, height);
 	camera = new Camera(glm::vec3(0.0f, 2.1f, 12.0f));
 	
 	buildGeometry();
 	frameBufferConfiguration();
+
+	// configure app
+	bulletManager = new BulletManager(shaders["bulletShader"]);
 
 	double lag = 0.0;
 	while (!glfwWindowShouldClose(window)) {
@@ -291,6 +298,7 @@ void MyApp::loop() {
 
 void MyApp::update(const double& dt) {
 	// std::cout << "\r+";
+	bulletManager->update(dt);
 }
 
 void MyApp::frameBufferConfiguration() {
@@ -623,11 +631,14 @@ void MyApp::renderScene() {
 	model = glm::scale(model, glm::vec3(0.07f));
 	targetShader.setMat4("model", model);
 	meshes["target"].render();
+
+
+	bulletManager->render(view, projection);
 }
 
 MyApp::~MyApp() {
-	if (camera)
-		delete camera;
+	if (camera) delete camera;
+	if (bulletManager) delete bulletManager;
 }
 
 void MyApp::onResize(int _width, int _height) {
@@ -640,5 +651,5 @@ void MyApp::onResize(int _width, int _height) {
 }
 
 void MyApp::shoot() {
-
+	bulletManager->addBullet(camera->Position + camera->Front, camera->Front);
 }
