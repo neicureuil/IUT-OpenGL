@@ -21,6 +21,8 @@ private:
 	GLuint bulletPositions;
 	size_t verticeCount;
 
+	const double SPHERE_RADIUS = 0.5;
+
 	const size_t MAX_BULLETS = 10;
 	size_t bulletNumber = 0;
 

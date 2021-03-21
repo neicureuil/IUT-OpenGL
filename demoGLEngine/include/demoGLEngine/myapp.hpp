@@ -11,8 +11,10 @@
 #include "glengine/texture.hpp"
 #include "glengine/glmesh.hpp"
 
+#include "collisionManager.hpp"
 #include "bulletManager.hpp"
 #include "offLoader.hpp"
+#include "target.hpp"
 
 #include <unordered_map>
 
@@ -31,6 +33,8 @@ public:
 
 private:
 	BulletManager* bulletManager;
+	CollisionManager* collisionManager;
+	Target* target;
 
 private:
 	enum class DisplayStyle { normal, depthBuffer, Foggy, NightVision };

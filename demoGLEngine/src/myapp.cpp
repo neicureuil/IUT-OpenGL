@@ -11,7 +11,7 @@
 
 MyApp::MyApp(int _width, int _height, const char* _title)
 	:width(_width), height(_height), title(_title), window(nullptr), framebuffer(0), textureColorbuffer(0), rbo(0),
-	camera(nullptr), bulletManager(nullptr),
+	camera(nullptr), bulletManager(nullptr), collisionManager(nullptr),
 	deltaTime(0.0f), lastFrame(0.0f), firstMouse(true),
 	lastX(0.0f), lastY(0.0f), leftButtonPressed(false), leftButtonReleased(false),
 	displayState(DisplayStyle::normal) {
@@ -248,11 +248,6 @@ void MyApp::buildGeometry() {
 	const Shader &groundShader = shaders["groundShader"];
 	groundShader.bind();
 	groundShader.setInt("ground", 3);
-
-	const Shader& targetShader = shaders["targetShader"];
-	targetShader.bind();
-	targetShader.setInt("textureTarget", 11);
-
 }
 
 void MyApp::loop() {
@@ -265,8 +260,10 @@ void MyApp::loop() {
 	buildGeometry();
 	frameBufferConfiguration();
 
-	// configure app
+	// configure app component
+	target = new Target(glm::vec3(-10, 3.5f, -10), meshes["target"], shaders["targetShader"]);
 	bulletManager = new BulletManager(shaders["bulletShader"]);
+	collisionManager = new CollisionManager();
 
 	double lag = 0.0;
 	while (!glfwWindowShouldClose(window)) {
@@ -297,8 +294,8 @@ void MyApp::loop() {
 }
 
 void MyApp::update(const double& dt) {
-	// std::cout << "\r+";
 	bulletManager->update(dt);
+	collisionManager->testTargetCollisions(target, bulletManager);
 }
 
 void MyApp::frameBufferConfiguration() {
@@ -620,25 +617,15 @@ void MyApp::renderScene() {
 	ground.bind();
 	ground.render();
 
-	
-	const Shader &targetShader = shaders["targetShader"];
-	meshes["target"].bind();
-	targetShader.bind();
-	targetShader.setMat4("projection", projection);
-	targetShader.setMat4("view", view);
-	model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(-10,3.5f,-10));
-	model = glm::scale(model, glm::vec3(0.07f));
-	targetShader.setMat4("model", model);
-	meshes["target"].render();
-
-
+	target->render(view, projection);
 	bulletManager->render(view, projection);
 }
 
 MyApp::~MyApp() {
 	if (camera) delete camera;
 	if (bulletManager) delete bulletManager;
+	if (collisionManager) delete collisionManager;
+	if (target) delete target;
 }
 
 void MyApp::onResize(int _width, int _height) {

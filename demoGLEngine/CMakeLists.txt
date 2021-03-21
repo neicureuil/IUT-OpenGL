@@ -23,6 +23,8 @@ set(SRC
 	${SRC_DIR}/utils.cpp
 	${SRC_DIR}/offLoader.cpp
 	${SRC_DIR}/bulletManager.cpp
+	${SRC_DIR}/collisionManager.cpp
+	${SRC_DIR}/target.cpp
 )
 
 
@@ -36,6 +38,8 @@ set(HEADER
 	${INC_DIR}/${PROJECT_NAME}/offLoader.hpp
 	${INC_DIR}/${PROJECT_NAME}/bullet.hpp
 	${INC_DIR}/${PROJECT_NAME}/bulletManager.hpp
+	${INC_DIR}/${PROJECT_NAME}/collisionManager.hpp
+	${INC_DIR}/${PROJECT_NAME}/target.hpp
 )
 
 set(RESOURCE_FILES	
