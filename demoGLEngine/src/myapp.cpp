@@ -295,6 +295,7 @@ void MyApp::loop() {
 
 void MyApp::update(const double& dt) {
 	bulletManager->update(dt);
+	target->update(glfwGetTime());
 	collisionManager->testTargetCollisions(target, bulletManager);
 }
 

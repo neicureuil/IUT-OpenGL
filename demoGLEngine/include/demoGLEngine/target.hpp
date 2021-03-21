@@ -11,7 +11,7 @@
 class Target {
 
 private:
-	glm::vec3 pos, scale;
+	glm::vec3 pos, scale, realPos;
 	const Shader& shader;
 	const glMesh& mesh;
 
@@ -20,8 +20,10 @@ public:
 	~Target();
 
 	void render(glm::mat4 view, glm::mat4 proj);
+	void update(double dt);
+	void setDeformation(glm::vec2 pos, glm::vec3 dir);
 	
-	inline const glm::vec3 getPos() { return pos; };
+	inline const glm::vec3 getPos() { return realPos; };
 	inline const glm::vec3 getScale() { return scale; };
 	inline const glm::vec2 getSize() { return glm::vec2(100,100); };
 };

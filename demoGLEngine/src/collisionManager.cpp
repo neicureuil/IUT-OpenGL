@@ -17,17 +17,21 @@ void CollisionManager::testTargetCollisions(Target* target, BulletManager* bm) {
 	glm::vec3 targetUpLeft( target->getPos().x - (target->getSize().x * target->getScale().x)/2, target->getPos().y - (target->getSize().y * target->getScale().y)/2, target->getPos().z - checkRadius);
 	glm::vec3 targetDownRight(target->getPos().x + (target->getSize().x * target->getScale().x) / 2, target->getPos().y + (target->getSize().y * target->getScale().y) / 2, target->getPos().z + checkRadius);
 
+	// Tests de collision avec la cible
 	for (int i = 0; i < bm->getBulletNumber(); i++) {
 
 		double radius = 1;
 		const Bullet& b = bm->getBullets()[i];
 
 		if (b.pos.x > targetUpLeft.x && b.pos.y > targetUpLeft.y && b.pos.z > targetUpLeft.z  &&  b.pos.x < targetDownRight.x && b.pos.y < targetDownRight.y && b.pos.z < targetDownRight.z) {
-			// Collision d'un bullet avec la target
-
+			// Collision d'un bullet avec la cible
+			double size = target->getSize().x * target->getScale().x;
+			target->setDeformation(glm::vec2((b.pos.x - targetUpLeft.x)/size, (b.pos.y - targetUpLeft.y)/size), b.dir);
 			bm->removeBullet(i);
 		}
 
 	}
+
+	// Tests de collision avec les cubes
 
 }

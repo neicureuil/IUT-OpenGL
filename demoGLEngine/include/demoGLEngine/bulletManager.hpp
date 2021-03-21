@@ -23,7 +23,7 @@ private:
 
 	const double SPHERE_RADIUS = 0.5;
 
-	const size_t MAX_BULLETS = 10;
+	const size_t MAX_BULLETS = 20;
 	size_t bulletNumber = 0;
 
 	Bullet* bullets = nullptr;
