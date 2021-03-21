@@ -41,5 +41,9 @@ public:
 	void render(glm::mat4 view, glm::mat4 proj);
 
 	void addBullet(glm::vec3 pos, glm::vec3 dir);
+	void removeBullet(size_t id);
+
+	inline const size_t getBulletNumber() { return bulletNumber; };
+	inline const Bullet* getBullets() { return bullets; };
 
 };

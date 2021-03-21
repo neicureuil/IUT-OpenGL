@@ -105,3 +105,8 @@ void BulletManager::addBullet(glm::vec3 pos, glm::vec3 dir) {
 	bullets[bulletNumber].dir = dir;
 	bullets[bulletNumber].life = 5.0f;
 }
+
+void BulletManager::removeBullet(size_t id) {
+	if (id >= MAX_BULLETS) return;
+	bullets[id].life = -1.0f;
+}
