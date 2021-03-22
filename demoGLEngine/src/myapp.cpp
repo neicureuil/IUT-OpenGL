@@ -196,10 +196,10 @@ void MyApp::buildGeometry() {
 		22, 23, 20
 	};
 
-	meshes["box"] = glMesh(cubeVertices, cubeIndices, GL_STATIC_DRAW);
+	meshes["box"] = glMesh2(cubeVertices, cubeIndices, GL_STATIC_DRAW);
 
 	OFFObject* target = OFFLoader::loadFile(std::string(_resources_directory).append("objects/100x100pointsUV.off").c_str());
-	meshes["target"] = glMesh(target->vertices, {}, target->uvs, target->triangles, GL_STATIC_DRAW);
+	meshes["target"] = glMesh2(target->vertices, {}, target->uvs, target->triangles, GL_STATIC_DRAW);
 	delete target;
 
 	// load and create a texture 
@@ -221,7 +221,7 @@ void MyApp::buildGeometry() {
 	boxShader.setInt("textureNormal", 10);
 
 	// second, configure the light's VAO (VBO stays the same; the vertices are the same for the light object which is also a 3D cube)
-	meshes["lightProxy"] = glMesh(cubeVertices, cubeIndices, GL_STATIC_DRAW);
+	meshes["lightProxy"] = glMesh2(cubeVertices, cubeIndices, GL_STATIC_DRAW);
 
 	// Plan
 	std::vector<float> planVertices = {
@@ -237,7 +237,7 @@ void MyApp::buildGeometry() {
 		1, 2, 3    // second triangle
 	};
 
-	meshes["ground"] = glMesh(planVertices, planIndices, GL_STATIC_DRAW);
+	meshes["ground"] = glMesh2(planVertices, planIndices, GL_STATIC_DRAW);
 	textures["ground"] = Texture(std::string(_resources_directory).append("textures/wall.jpg").c_str());
 
 	shaders["groundShader"] = Shader(
@@ -333,7 +333,7 @@ void MyApp::frameBufferConfiguration() {
 		0, 2, 3
 	};
 
-	const glMesh& screenQuad = meshes["screenQuad"] = glMesh(quadVertices, {}, quadUV, quadIndices);
+	const glMesh2& screenQuad = meshes["screenQuad"] = glMesh2(quadVertices, {}, quadUV, quadIndices);
 	screenQuad.bind();
 
 
@@ -459,7 +459,7 @@ void MyApp::render() {
 		break;
 	}
 	
-	const glMesh& screenQuad = meshes["screenQuad"];
+	const glMesh2& screenQuad = meshes["screenQuad"];
 	screenQuad.bind();
 	glActiveTexture(GL_TEXTURE4);
 	glBindTexture(GL_TEXTURE_2D, textureColorbuffer);	// use the color attachment texture as the texture of the quad plane
@@ -501,6 +501,7 @@ void MyApp::renderScene() {
 	lightProxyShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
 
 	boxShader.bind();
+	boxShader.setVec3("lightPos", lightPos);
 	boxShader.setVec3("viewPos", camera->Position);
 	boxShader.setVec3("light.position", lightPos);
 	boxShader.setVec3("light.ambient", ambientColor);
@@ -593,7 +594,7 @@ void MyApp::renderScene() {
 	model = glm::rotate(model, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 1.0f)); // a smaller cube	
 	lightProxyShader.setMat4("model", model);
 
-	const glMesh& lightProxy = meshes["lightProxy"];
+	const glMesh2& lightProxy = meshes["lightProxy"];
 	lightProxy.bind();
 	lightProxy.render();
 	
@@ -614,7 +615,7 @@ void MyApp::renderScene() {
 	groundShader.setVec3("material.specular", 1.0f, 1.0f, 1.0f);
 	groundShader.setFloat("material.shininess", 8);	
 	
-	const glMesh& ground = meshes["ground"];
+	const glMesh2& ground = meshes["ground"];
 	ground.bind();
 	ground.render();
 

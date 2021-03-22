@@ -15,6 +15,7 @@
 #include "bulletManager.hpp"
 #include "offLoader.hpp"
 #include "target.hpp"
+#include "glmesh2.hpp"
 
 #include <unordered_map>
 
@@ -68,7 +69,7 @@ private:
 	Camera* camera;	
 	std::unordered_map<std::string, Texture> textures;
 	std::unordered_map<std::string, Shader> shaders;
-	std::unordered_map<std::string, glMesh> meshes;
+	std::unordered_map<std::string, glMesh2> meshes;
 	GLuint framebuffer, textureColorbuffer, rbo;
 };
 

@@ -82,8 +82,6 @@ void ParticleSystem::simulate(const double& delta) {
     if (newparticles > (int)(0.016f * 10000.0))
         newparticles = (int)(0.016f * 10000.0);
 
-    std::cerr << Utils::random(10, 200) << std::endl;
-
     for (int i = 0; i < newparticles; i++) {
         int particleIndex = findUnused();
         particles[particleIndex].life = Utils::random(0, 5);

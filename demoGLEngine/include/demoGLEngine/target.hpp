@@ -8,15 +8,17 @@
 #include "glengine/glmesh.hpp"
 #include "glengine/shader.hpp"
 
+#include "glmesh2.hpp"
+
 class Target {
 
 private:
 	glm::vec3 pos, scale, realPos;
 	const Shader& shader;
-	const glMesh& mesh;
+	const glMesh2& mesh;
 
 public:
-	Target(glm::vec3 _pos, const glMesh& _mesh, const Shader& _shader);
+	Target(glm::vec3 _pos, const glMesh2& _mesh, const Shader& _shader);
 	~Target();
 
 	void render(glm::mat4 view, glm::mat4 proj);

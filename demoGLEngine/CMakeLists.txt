@@ -25,6 +25,7 @@ set(SRC
 	${SRC_DIR}/bulletManager.cpp
 	${SRC_DIR}/collisionManager.cpp
 	${SRC_DIR}/target.cpp
+	${SRC_DIR}/glmesh2.cpp
 )
 
 
@@ -40,6 +41,7 @@ set(HEADER
 	${INC_DIR}/${PROJECT_NAME}/bulletManager.hpp
 	${INC_DIR}/${PROJECT_NAME}/collisionManager.hpp
 	${INC_DIR}/${PROJECT_NAME}/target.hpp
+	${INC_DIR}/${PROJECT_NAME}/glmesh2.hpp
 )
 
 set(RESOURCE_FILES	

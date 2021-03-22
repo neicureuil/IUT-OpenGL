@@ -1,7 +1,7 @@
 #include "demoGLEngine/target.hpp"
 #include <iostream>
 
-Target::Target(glm::vec3 _pos, const glMesh& _mesh, const Shader& _shader)
+Target::Target(glm::vec3 _pos, const glMesh2& _mesh, const Shader& _shader)
 	: pos(_pos), scale(glm::vec3(0.07f)), realPos(_pos), mesh(_mesh), shader(_shader) {
 
 	shader.bind();
@@ -41,5 +41,4 @@ void Target::setDeformation(glm::vec2 pos, glm::vec3 dir) {
 	shader.setBool("hasDeformation", true);
 	shader.setVec2("deformationPos", pos);
 	shader.setVec3("deformationDir", dir);
-	std::cout << pos.x << std::endl;
 }
