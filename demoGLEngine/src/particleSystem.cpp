@@ -1,12 +1,13 @@
 #include "demoGLEngine/particleSystem.hpp"
 
-ParticleSystem::ParticleSystem(glm::vec3 _pos, const Shader& _shader) : pos(_pos), particle_count(0), last_used(0), shader(_shader) {
+ParticleSystem::ParticleSystem(glm::vec3 _pos, const Shader& _shader, int _texId) : pos(_pos), particle_count(0), last_used(0), shader(_shader), texId(_texId) {
     particles = std::make_unique<Particle[]>(max_particles);
-
-    this->init();
 
     g_particule_position_size_data = new GLfloat[max_particles * 4];
     g_particule_color_data = new GLubyte[max_particles * 4];
+    g_particule_life_data = new GLfloat[max_particles * 2];
+
+    init();
 }
 
 ParticleSystem::~ParticleSystem() {
@@ -38,6 +39,11 @@ void ParticleSystem::init() {
     glBindBuffer(GL_ARRAY_BUFFER, particles_color_buffer);
     glBufferData(GL_ARRAY_BUFFER, max_particles * 4 * sizeof(GLubyte), NULL, GL_STREAM_DRAW);
 
+    glGenBuffers(1, &particles_life_buffer);
+    glBindBuffer(GL_ARRAY_BUFFER, particles_life_buffer);
+    glBufferData(GL_ARRAY_BUFFER, max_particles * 2 * sizeof(GLfloat), NULL, GL_STREAM_DRAW);
+    
+
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, billboard_vertex_buffer);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
@@ -50,9 +56,14 @@ void ParticleSystem::init() {
     glBindBuffer(GL_ARRAY_BUFFER, particles_color_buffer);
     glVertexAttribPointer(2, 4, GL_UNSIGNED_BYTE, GL_TRUE, 0, (void*)0);
 
+    glEnableVertexAttribArray(3);
+    glBindBuffer(GL_ARRAY_BUFFER, particles_life_buffer);
+    glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
     glVertexAttribDivisor(0, 0);
     glVertexAttribDivisor(1, 1);
     glVertexAttribDivisor(2, 1);
+    glVertexAttribDivisor(3, 1);
 }
 
 std::size_t ParticleSystem::findUnused() {
@@ -77,14 +88,15 @@ void ParticleSystem::sort() {
     std::sort(&particles[0], &particles[max_particles]);
 }
 
-void ParticleSystem::simulate(const double& delta) {
+void ParticleSystem::simulate(const double& delta, const glm::vec3& camPos) {
     int newparticles = (int)(delta * 10000.0);
     if (newparticles > (int)(0.016f * 10000.0))
         newparticles = (int)(0.016f * 10000.0);
 
     for (int i = 0; i < newparticles; i++) {
         int particleIndex = findUnused();
-        particles[particleIndex].life = Utils::random(0, 5);
+        particles[particleIndex].life = Utils::random(0, 3);
+        particles[particleIndex].maxLife = particles[particleIndex].life;
         particles[particleIndex].pos = pos;
 
         float spread = Utils::random(1, 2); //  1.5f 
@@ -120,7 +132,7 @@ void ParticleSystem::simulate(const double& delta) {
 
                 p.speed += glm::vec3(0.0f, -9.81f, 0.0f) * (float)delta * 0.5f;
                 p.pos += p.speed * (float)delta;
-                p.cameraDistance = 1; // A MODIF
+                p.cameraDistance = glm::length2(p.pos - camPos);
 
                 g_particule_position_size_data[4 * particle_count + 0] = p.pos.x;
                 g_particule_position_size_data[4 * particle_count + 1] = p.pos.y;
@@ -132,6 +144,9 @@ void ParticleSystem::simulate(const double& delta) {
                 g_particule_color_data[4 * particle_count + 1] = p.g;
                 g_particule_color_data[4 * particle_count + 2] = p.b;
                 g_particule_color_data[4 * particle_count + 3] = p.a;
+
+                g_particule_life_data[2 * particle_count + 0] = (1.0f-p.life);
+                g_particule_life_data[2 * particle_count + 1] = p.maxLife;
 
             }
             else {
@@ -146,13 +161,14 @@ void ParticleSystem::simulate(const double& delta) {
     sort();
 }
 
-void ParticleSystem::draw(glm::mat4 ViewMatrix, glm::mat4  ProjectionMatrix) {
+void ParticleSystem::render(glm::mat4 ViewMatrix, glm::mat4  ProjectionMatrix) {
 
     glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     shader.bind();
-    shader.setInt("textureParticle", 6);
+    shader.setInt("textureParticle", texId);
 
     glm::mat4 ViewProjectionMatrix = ProjectionMatrix * ViewMatrix;
     shader.setVec3("CameraRight_worldspace", ViewMatrix[0][0], ViewMatrix[1][0], ViewMatrix[2][0]);
@@ -167,7 +183,11 @@ void ParticleSystem::draw(glm::mat4 ViewMatrix, glm::mat4  ProjectionMatrix) {
     glBindBuffer(GL_ARRAY_BUFFER, particles_color_buffer);
     glBufferData(GL_ARRAY_BUFFER, max_particles * 4 * sizeof(GLubyte), g_particule_color_data, GL_STREAM_DRAW);
 
+    glBindBuffer(GL_ARRAY_BUFFER, particles_life_buffer);
+    glBufferData(GL_ARRAY_BUFFER, max_particles * 2 * sizeof(GLfloat), g_particule_life_data, GL_STREAM_DRAW);
+
     glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, particle_count);
 
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     //glDisable(GL_BLEND);
 }

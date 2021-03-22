@@ -16,6 +16,7 @@
 #include "offLoader.hpp"
 #include "target.hpp"
 #include "glmesh2.hpp"
+#include "particleSystem.hpp"
 
 #include <unordered_map>
 
@@ -36,6 +37,7 @@ private:
 	BulletManager* bulletManager;
 	CollisionManager* collisionManager;
 	Target* target;
+	ParticleSystem* particles;
 
 private:
 	enum class DisplayStyle { normal, depthBuffer, Foggy, NightVision };

@@ -30,8 +30,9 @@ void main() {
     mat3 normalMatrix =  transpose(inverse(mat3(model)));
     vec3 T = normalize(normalMatrix * aTangent);
     vec3 N = normalize(normalMatrix * aNormal);
-    T = normalize(T - dot(T, N) * N);
-    vec3 B = cross(N, T);
+    //T = normalize(T - dot(T, N) * N);
+    //vec3 B = cross(N, T);
+    vec3 B = normalize(normalMatrix * aBitangent);
     mat3 TBN = transpose(mat3(T, B, N));    
 
     TangentLightPos = TBN * lightPos;

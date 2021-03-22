@@ -3,6 +3,7 @@
 layout(location = 0) in vec3 squareVertices;
 layout(location = 1) in vec4 xyzs; 
 layout(location = 2) in vec4 color; 
+layout(location = 3) in vec2 life; 
 
 out vec2 UV;
 out vec4 particlecolor;
@@ -19,13 +20,10 @@ void main()
 	vec3 vertexPosition_worldspace = particleCenter_wordspace + CameraRight_worldspace * squareVertices.x * particleSize + CameraUp_worldspace * squareVertices.y * particleSize;
 	gl_Position = VP * vec4(vertexPosition_worldspace, 1.0f);
 
-	UV = squareVertices.xy + vec2(0.5, 0.5);
-
-	vec2 a;
-	a.x = 7 / 8;
-	a.y = 7 / 8;
-
-	UV = (UV / 8) + a;
+	//UV = squareVertices.xy + vec2(0.5, 0.5);
+	int texAtlasNum = int(ceil((life.x / life.y) * 64.0f));
+	vec2 offset = vec2(float(texAtlasNum%8), floor(float(texAtlasNum)/8.0f));
+	UV = (squareVertices.xy  + vec2(0.5, 0.5) + offset) / 8;
 
 	particlecolor = color;
 }

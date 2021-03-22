@@ -143,6 +143,12 @@ void MyApp::buildGeometry() {
 		std::string(_resources_directory).append("shaders/bullet.frag").c_str()
 	);
 
+	shaders["particleShader"] = Shader(
+		std::string(_resources_directory).append("shaders/particle.vert").c_str(),
+		std::string(_resources_directory).append("shaders/particle.frag").c_str()
+	);
+
+
 	std::vector<float> cubeVertices = {
 		// positions          // normals           // texture coords
 		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f, // 0  0
@@ -207,9 +213,10 @@ void MyApp::buildGeometry() {
 	textures["textureDiffuse"] = Texture(std::string(_resources_directory).append("textures/container2_gris.png").c_str());
 	textures["textureSpecular"] = Texture(std::string(_resources_directory).append("textures/container2_specular2.png").c_str());
 	textures["textureMask"] = Texture(std::string(_resources_directory).append("textures/container2_diffuse_mask.png").c_str());
-	textures["textureNormal"] = Texture(std::string(_resources_directory).append("textures/container2_normal.png").c_str());
+	textures["textureNormal"] = Texture(std::string(_resources_directory).append("textures/NormalMap.png").c_str());
 	
 	textures["textureTarget"] = Texture(std::string(_resources_directory).append("textures/cible.png").c_str());
+	textures["textureParticle"] = Texture(std::string(_resources_directory).append("textures/ParticleAtlas.png").c_str());
 	
 	// shader configuration
 	// --------------------
@@ -264,6 +271,7 @@ void MyApp::loop() {
 	target = new Target(glm::vec3(-10, 3.5f, -10), meshes["target"], shaders["targetShader"]);
 	bulletManager = new BulletManager(shaders["bulletShader"]);
 	collisionManager = new CollisionManager();
+	particles = new ParticleSystem(glm::vec3(-5, 0, -5), shaders["particleShader"], 12);
 
 	double lag = 0.0;
 	while (!glfwWindowShouldClose(window)) {
@@ -297,6 +305,7 @@ void MyApp::update(const double& dt) {
 	bulletManager->update(dt);
 	target->update(glfwGetTime());
 	collisionManager->testTargetCollisions(target, bulletManager);
+	particles->simulate(dt, camera->Position);
 }
 
 void MyApp::frameBufferConfiguration() {
@@ -482,6 +491,7 @@ void MyApp::renderScene() {
 
 	textures["textureNormal"].bind(GL_TEXTURE10);
 	textures["textureTarget"].bind(GL_TEXTURE11);
+	textures["textureParticle"].bind(GL_TEXTURE12);
 
 	// be sure to activate shader when setting uniforms/drawing objects
 	const Shader& boxShader = shaders["boxShader"];
@@ -621,6 +631,7 @@ void MyApp::renderScene() {
 
 	target->render(view, projection);
 	bulletManager->render(view, projection);
+	particles->render(view, projection);
 }
 
 MyApp::~MyApp() {
