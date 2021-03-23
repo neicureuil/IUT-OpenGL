@@ -138,10 +138,21 @@ void MyApp::buildProject() {
 	};
 
 	// Configuration des composants du projets
-	target = new Target(glm::vec3(-20, 3.5f, -10), meshes["target"], shaders["targetShader"]);
+
+	// Cible
+	OFFObject* targetObj = OFFLoader::loadFile(std::string(_resources_directory).append("objects/100x100pointsUV.off").c_str());
+	meshes["target"] = glMesh2(targetObj->vertices, {}, targetObj->uvs, targetObj->triangles, GL_STATIC_DRAW);
+	target = new Target(glm::vec3(-20, 3.5f, -10), meshes["target"], shaders["targetShader"], targetObj->min, targetObj->max);
+	delete targetObj;
+
+	// Gestionnaire de balles
 	bulletManager = new BulletManager(shaders["bulletShader"]);
+	// Gestionnaire de collision
 	collisionManager = new CollisionManager();
-	particles = new ParticleSystem(glm::vec3(1.5f, 1.0f, 3.5f), shaders["particleShader"], 12);
+	// Systeme de particule (feu)
+	fireParticles = new ParticleSystem(glm::vec3(1.5f, 1.0f, 3.5f), shaders["particleShader"], 12, glm::vec2(8, 8));
+	elecParticles = new ParticleSystem(glm::vec3(5.0f, 5.0f, 6.0f), shaders["particleShader"], 13, glm::vec2(5, 6));
+	elecParticles->setMaxLife(1);
 }
 
 void MyApp::buildGeometry() {
@@ -226,10 +237,6 @@ void MyApp::buildGeometry() {
 
 	meshes["box"] = glMesh2(cubeVertices, cubeIndices, GL_STATIC_DRAW);
 
-	OFFObject* target = OFFLoader::loadFile(std::string(_resources_directory).append("objects/100x100pointsUV.off").c_str());
-	meshes["target"] = glMesh2(target->vertices, {}, target->uvs, target->triangles, GL_STATIC_DRAW);
-	delete target;
-
 	// load and create a texture 
 	// -------------------------
 	textures["textureDiffuse"] = Texture(std::string(_resources_directory).append("textures/container2_gris.png").c_str());
@@ -239,6 +246,7 @@ void MyApp::buildGeometry() {
 	
 	textures["textureTarget"] = Texture(std::string(_resources_directory).append("textures/cible.png").c_str());
 	textures["textureParticle"] = Texture(std::string(_resources_directory).append("textures/ParticleAtlas.png").c_str());
+	textures["textureParticle2"] = Texture(std::string(_resources_directory).append("textures/ParticleAtlas2.png").c_str());
 	
 	// shader configuration
 	// --------------------
@@ -328,7 +336,8 @@ void MyApp::update(const double& dt) {
 	// Verification des collisions
 	collisionManager->testTargetCollisions(target, bulletManager, cubes);
 	// Simulation des particules
-	particles->simulate(dt, camera->Position);
+	fireParticles->simulate(dt, camera->Position);
+	elecParticles->simulate(dt, camera->Position);
 }
 
 void MyApp::frameBufferConfiguration() {
@@ -512,15 +521,17 @@ void MyApp::renderScene() {
 	textures["textureMask"].bind(GL_TEXTURE2);
 	textures["ground"].bind(GL_TEXTURE3);
 
+	// Textures utilisées dans le projet
 	textures["textureNormal"].bind(GL_TEXTURE10);
 	textures["textureTarget"].bind(GL_TEXTURE11);
 	textures["textureParticle"].bind(GL_TEXTURE12);
+	textures["textureParticle2"].bind(GL_TEXTURE13);
 
 	// be sure to activate shader when setting uniforms/drawing objects
 	const Shader& boxShader = shaders["boxShader"];
 	boxShader.bind();
 
-	glm::vec3 lightPos(2.0f, 3.0f, 6.0f);	
+	glm::vec3 lightPos(5.0f, 5.0f, 6.0f);	
 	// light properties
 	glm::vec3 lightColor(0.9f, 0.9f, 1.0f); 
 	glm::vec3 diffuseColor = lightColor * glm::vec3(1.0f); // decrease the influence or not...
@@ -607,7 +618,8 @@ void MyApp::renderScene() {
 	// Affichage des balles
 	bulletManager->render(view, projection);
 	// Affichage des particules de feu
-	particles->render(view, projection);
+	fireParticles->render(view, projection);
+	elecParticles->render(view, projection);
 }
 
 MyApp::~MyApp() {
@@ -615,6 +627,8 @@ MyApp::~MyApp() {
 	if (bulletManager) delete bulletManager;
 	if (collisionManager) delete collisionManager;
 	if (target) delete target;
+	if (fireParticles) delete fireParticles;
+	if (elecParticles) delete elecParticles;
 }
 
 void MyApp::onResize(int _width, int _height) {
@@ -627,5 +641,6 @@ void MyApp::onResize(int _width, int _height) {
 }
 
 void MyApp::shoot() {
-	bulletManager->addBullet(camera->Position + camera->Front, camera->Front);
+	glm::vec3 screenPos = glm::vec3(lastX / width - 0.5, -lastY / height + 0.5, 0.0f);
+	bulletManager->addBullet(camera->Position + camera->Front + screenPos, camera->Front + screenPos);
 }

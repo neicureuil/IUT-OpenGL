@@ -33,6 +33,20 @@ OFFObject* OFFLoader::loadFile(const char* path) {
 		obj->vertices.push_back((float)z);
 		obj->uvs.push_back((float)v);
 		obj->uvs.push_back((float)u);
+
+		if (obj->min.x > x)
+			obj->min.x = x;
+		if (obj->min.y > y)
+			obj->min.y = y;
+		if (obj->min.z > z)
+			obj->min.z = z;
+
+		if (obj->max.x < x)
+			obj->max.x = x;
+		if (obj->max.y < y)
+			obj->max.y = y;
+		if (obj->max.z < z)
+			obj->max.z = z;
 	}
 
 	// Lecture des faces

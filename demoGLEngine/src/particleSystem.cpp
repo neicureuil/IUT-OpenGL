@@ -1,6 +1,6 @@
 #include "demoGLEngine/particleSystem.hpp"
 
-ParticleSystem::ParticleSystem(glm::vec3 _pos, const Shader& _shader, int _texId) : pos(_pos), particle_count(0), last_used(0), shader(_shader), texId(_texId) {
+ParticleSystem::ParticleSystem(glm::vec3 _pos, const Shader& _shader, int _texId, glm::vec2 _atlasSize) : pos(_pos), particle_count(0), last_used(0), shader(_shader), texId(_texId), atlasSize(_atlasSize) {
     particles = std::make_unique<Particle[]>(max_particles);
 
     g_particule_position_size_data = new GLfloat[max_particles * 4];
@@ -86,18 +86,14 @@ void ParticleSystem::simulate(const double& delta, const glm::vec3& camPos) {
     int newparticles = (int)(delta * 10000.0);
     for (int i = 0; i < newparticles; i++) {
         int particleIndex = findUnused();
-        particles[particleIndex].life = Utils::random(0, 3);
+        particles[particleIndex].life = Utils::random(0, maxLife);
         particles[particleIndex].maxLife = particles[particleIndex].life;
         particles[particleIndex].pos = pos;
-        particles[particleIndex].cameraDistance = -1;
+        particles[particleIndex].cameraDistance = glm::length2(pos - camPos);
 
         float spread = 1.5f; 
         glm::vec3 maindir = glm::vec3(0.0f, 1.0f, 0.0f);
-        glm::vec3 randomdir = glm::vec3(
-            (rand() % 2000 - 1000.0f) / 1000.0f,
-            (rand() % 2000 - 1000.0f) / 1000.0f,
-            (rand() % 2000 - 1000.0f) / 1000.0f
-        );
+        glm::vec3 randomdir = glm::vec3( (rand() % 2000 - 1000.0f) / 1000.0f, (rand() % 2000 - 1000.0f) / 1000.0f, (rand() % 2000 - 1000.0f) / 1000.0f );
 
         particles[particleIndex].speed = maindir + randomdir * spread;
         particles[particleIndex].size = (rand() % 1000) / 2000.0f + 0.1f;
@@ -141,7 +137,7 @@ void ParticleSystem::simulate(const double& delta, const glm::vec3& camPos) {
     sort();
 }
 
-void ParticleSystem::render(glm::mat4 ViewMatrix, glm::mat4  ProjectionMatrix) {
+void ParticleSystem::render(glm::mat4 view, glm::mat4  proj) {
 
     // Blend des particules
     glEnable(GL_BLEND);
@@ -150,12 +146,12 @@ void ParticleSystem::render(glm::mat4 ViewMatrix, glm::mat4  ProjectionMatrix) {
     // Bind du shader des particules et definitions des valeurs
     shader.bind();
     shader.setInt("textureParticle", texId);
+    shader.setVec2("atlasSize", atlasSize);
 
-    glm::mat4 ViewProjectionMatrix = ProjectionMatrix * ViewMatrix;
-    shader.setVec3("CameraRight_worldspace", ViewMatrix[0][0], ViewMatrix[1][0], ViewMatrix[2][0]);
-    shader.setVec3("CameraUp_worldspace", ViewMatrix[0][1], ViewMatrix[1][1], ViewMatrix[2][1]);
-    shader.setMat4("VP", ViewProjectionMatrix);
-
+    shader.setVec3("camRight", view[0][0], view[1][0], view[2][0]);
+    shader.setVec3("camUp", view[0][1], view[1][1], view[2][1]);
+    shader.setMat4("view", view);
+    shader.setMat4("projection", proj);
 
     // Mise a jours des buffers
     glBindVertexArray(vao);

@@ -129,6 +129,7 @@ void BulletManager::render(glm::mat4 view, glm::mat4 proj) {
 void BulletManager::addBullet(glm::vec3 pos, glm::vec3 dir) {
 	if (bulletNumber >= MAX_BULLETS) return;
 	// Ajout d'une balle => Met a jours les informations d'une balle non-utilisé dans le tableau de balles
+	bullets[bulletNumber].radius = BulletManager::SPHERE_RADIUS;
 	bullets[bulletNumber].pos = pos;
 	bullets[bulletNumber].dir = dir;
 	bullets[bulletNumber].life = 5.0f;

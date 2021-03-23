@@ -11,7 +11,7 @@ uniform bool hasDeformation;
 uniform vec2 deformationPos;
 uniform vec3 deformationDir;
 uniform vec3 deformationColor;
-uniform float deformationSpeed;
+uniform float deformationRadius;
 
 out vec3 normalVec;  
 out vec2 texCoord;
@@ -29,10 +29,11 @@ void main() {
     isDeformed = 0.0;
     defColor = deformationColor;
 
-    // Si la vertex est dans le rayon de deformation
+    // Si on a une deformation
     if(hasDeformation) {
         float d = distance(defPos, pPos);
-        if (d < 0.1) {
+        // Si la vertex est dans le rayon de deformation
+        if (d < 0.1 * deformationRadius) {
             // On dit a travers cette var au fragment shader que la vertex est deformée afin qu'il puisse l'afficher avec une couleur différente
             isDeformed = 1.0;
             // On deforme la cible

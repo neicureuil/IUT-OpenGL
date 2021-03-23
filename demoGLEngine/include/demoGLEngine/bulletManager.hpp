@@ -26,7 +26,7 @@ private:
 	GLuint bulletColors;
 	size_t verticeCount;
 
-	const double SPHERE_RADIUS = 0.5;
+	const float SPHERE_RADIUS = 0.5;
 
 	const size_t MAX_BULLETS = 20; // Nombre maximum de balles dans la scene
 	size_t bulletNumber = 0;

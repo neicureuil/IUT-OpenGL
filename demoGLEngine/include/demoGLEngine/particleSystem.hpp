@@ -21,17 +21,11 @@
 */
 class ParticleSystem {
 
-
-public:
-	ParticleSystem(glm::vec3 pos, const Shader& _shader, int _texId);
-	~ParticleSystem();
-
-	void simulate(const double& dt, const glm::vec3& camPos);
-	void render(glm::mat4 ViewMatrix, glm::mat4 ProjectionMatrix);
-
 private:
 	int texId; // Id de la texture sur le GPU
+	glm::vec2 atlasSize; // Taille de l'atlas de la texture (nombre de frame en x et en y)
 	glm::vec3 pos; // Position du systeme
+	int maxLife = 3; // Vie maximum des particules du systeme
 
 	static const std::size_t max_particles = 500; // Nombre maximum de particules dans le systeme
 	std::size_t particle_count; // Nombre actuel de particule dans le systeme
@@ -61,5 +55,14 @@ private:
 	* Fonction qui trie les particules dans le tableau
 	*/
 	void sort();
+
+public:
+	ParticleSystem(glm::vec3 pos, const Shader& _shader, int _texId, glm::vec2 _atlasSize);
+	~ParticleSystem();
+
+	void simulate(const double& dt, const glm::vec3& camPos);
+	void render(glm::mat4 ViewMatrix, glm::mat4 ProjectionMatrix);
+
+	inline void setMaxLife(int _ml) { maxLife = _ml; };
 
 };

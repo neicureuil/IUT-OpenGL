@@ -39,7 +39,8 @@ private:
 	BulletManager* bulletManager; // Gestionnaire des balles
 	CollisionManager* collisionManager; // Gestionnaire de collision
 	Target* target; // La cible de la scene
-	ParticleSystem* particles; // Systeme de particule de feu dans la scene
+	ParticleSystem* fireParticles; // Systeme de particule de feu dans la scene
+	ParticleSystem* elecParticles; // Systeme de particule d'electricité dans la scene
 
 private:
 	enum class DisplayStyle { normal, depthBuffer, Foggy, NightVision };

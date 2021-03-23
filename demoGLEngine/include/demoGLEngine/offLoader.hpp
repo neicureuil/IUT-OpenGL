@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <vector>
 #include <iostream>
+#include <glm/ext/vector_float3.hpp>
 
 /*
 * Structure représentant un objet off chargé
@@ -14,6 +15,7 @@ struct OFFObject
 	std::vector<float> vertices;
 	std::vector<unsigned int> triangles;
 	std::vector<float> uvs;
+	glm::vec3 min, max;
 };
 
 /*
