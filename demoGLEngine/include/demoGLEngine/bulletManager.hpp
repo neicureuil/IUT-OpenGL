@@ -14,6 +14,9 @@
 #include "bullet.hpp"
 #include "utils.hpp"
 
+/*
+* Classe gerant toutes les balles dans la scene
+*/
 class BulletManager {
 
 private:
@@ -25,10 +28,10 @@ private:
 
 	const double SPHERE_RADIUS = 0.5;
 
-	const size_t MAX_BULLETS = 20;
+	const size_t MAX_BULLETS = 20; // Nombre maximum de balles dans la scene
 	size_t bulletNumber = 0;
 
-	Bullet* bullets = nullptr;
+	Bullet* bullets = nullptr; // Tableau de balles (nombre maximum => MAX_BULLETS)
 	GLfloat* g_buller_positions;
 	GLfloat* g_buller_colors;
 

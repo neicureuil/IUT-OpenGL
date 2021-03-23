@@ -14,10 +14,7 @@ void CollisionManager::testTargetCollisions(Target* target, BulletManager* bm, c
 	double checkRadius = 0.5;
 
 	// Model de transformation de la cible qui sera appliquer aux points
-	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model, target->getPos());
-	model = glm::rotate(model, glm::radians(target->getRot()), glm::vec3(0.0f, 1.0f, 0.0f));
-	model = glm::scale(model, target->getScale());
+	glm::mat4 model = target->getModel();
 
 	// 3 Points de la cibles
 	glm::vec3 tcenter = glm::vec3(model * glm::vec4(-49.5f, 49.5f, 0.0f, 1));
@@ -48,36 +45,18 @@ void CollisionManager::testTargetCollisions(Target* target, BulletManager* bm, c
 				continue;
 			}
 		}
-	
-		// Tests de collision avec la cible
-		/*
-		
-		if (b.pos.x > targetUpLeft.x && b.pos.y > targetUpLeft.y && b.pos.z > targetUpLeft.z  &&  b.pos.x < targetDownRight.x && b.pos.y < targetDownRight.y && b.pos.z < targetDownRight.z) {
-			// Collision d'un bullet avec la cible
-			double size = target->getSize().x * target->getScale().x;
-			target->setDeformation(glm::vec2((b.pos.x - targetUpLeft.x)/size, (b.pos.y - targetUpLeft.y)/size), b.dir, b.speed);
-			
-			// Comme on a une collision avec la cible, on peut ne pas tester la collision avec les cubes et passer a la balle suivante
-			continue;
-		}
-		*/
-
 
 		// Tests de collision avec les cubes
-		/*
 		for (size_t j = 0; j < cubes.size(); j++) {
-			glm::vec3 realPos = cubes[j].getPos();
-			realPos.x += sin(glm::radians(cubes[j].getRot()));
-			realPos.z += cos(glm::radians(cubes[j].getRot()));
-			if (glm::length(realPos - b.pos) < 1 + checkRadius) {
-				std::cout << 1 << std::endl;
+			glm::vec3 realPos = cubes[j].getModel() * glm::vec4(0.0f,0.0f,0.0f, 1.0f);
+			if (glm::length(realPos - b.pos) < 1) {
 				// Collision avec un cube
-				//bm->removeBullet(i);
+				bm->removeBullet(i);
 				// Comme on a une collision avec un cube, on peut ne pas tester les autres et passer directement a la balle suivante
 				break;
 			}
 		}
-		*/
+		
 	}
 
 

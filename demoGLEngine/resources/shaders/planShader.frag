@@ -30,23 +30,25 @@ in vec3 fragPos;
 in vec2 texCoord;
 
 void main() {
-    // Ambiant
+    // Lumiere Ambiante
     vec3 ambient = light.ambient * objectColor * lightColor ;
 
-    // Diffuse
+    // Lumiere Diffuse
     vec3 norm = normalize(normalVec);
     vec3 lightDir = normalize(light.position - fragPos); 
 
     float diff = max(dot(norm, lightDir), 0.0);
     vec3 diffuse = light.diffuse  * ( diff );
 
-    // Specular
+    // Lumiere Speculaire
     vec3 viewDir = normalize(viewPos - fragPos);
     vec3 reflectDir = reflect(-lightDir, norm);  
 
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
     vec3 specular = light.specular * (spec);
 
+    
+    // Combinaison de la lumiere ambiante, diffuse et spéculaire pour l'affichage (Phong)
     vec3 result = (ambient + diffuse + specular);
     FragColor = texture(ground, texCoord) * vec4(result, 1.0);
 }

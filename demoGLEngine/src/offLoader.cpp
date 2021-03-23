@@ -24,6 +24,7 @@ OFFObject* OFFLoader::loadFile(const char* path) {
 
 	OFFObject* obj = new OFFObject();
 
+	// Lecture des vertices
 	for (i = 0;i < nbsommets;i++) {
 		double x, y, z, u, v;
 		fscanf(file, "%lf %lf %lf %lf %lf\n", &x, &y, &z, &u, &v);
@@ -34,6 +35,7 @@ OFFObject* OFFLoader::loadFile(const char* path) {
 		obj->uvs.push_back((float)u);
 	}
 
+	// Lecture des faces
 	for (i = 0;i < nbfaces;i++)	{
 		unsigned int n, n1, n2, n3;
 		fscanf(file, "%u %u %u %u\n", &n, &n1, &n2, &n3);

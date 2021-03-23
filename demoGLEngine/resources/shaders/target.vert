@@ -25,14 +25,18 @@ void main() {
     vec3 pPos = vec3(aTexCoord.x, aTexCoord.y, 0.0);
     vec3 defPos = vec3(1-deformationPos.x, 1-deformationPos.y, 0.0);
 
+    // Passage des informations de deforamtions au fragment shader
     isDeformed = 0.0;
     defColor = deformationColor;
 
+    // Si la vertex est dans le rayon de deformation
     if(hasDeformation) {
         float d = distance(defPos, pPos);
         if (d < 0.1) {
+            // On dit a travers cette var au fragment shader que la vertex est deformée afin qu'il puisse l'afficher avec une couleur différente
             isDeformed = 1.0;
-		    //gPos.xyz = gPos + deformationSpeed * deformationDir;
+            // On deforme la cible
+		    gPos.xyz = gPos +  deformationDir;
 	    }
     }
     

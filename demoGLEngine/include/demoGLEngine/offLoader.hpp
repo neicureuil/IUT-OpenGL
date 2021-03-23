@@ -6,6 +6,9 @@
 #include <vector>
 #include <iostream>
 
+/*
+* Structure représentant un objet off chargé
+*/
 struct OFFObject
 {
 	std::vector<float> vertices;
@@ -13,6 +16,9 @@ struct OFFObject
 	std::vector<float> uvs;
 };
 
+/*
+* Classe contenant les fonctions statique qui permettent le chargement d'un fichier OFF-UV
+*/
 class OFFLoader {
 
 private:

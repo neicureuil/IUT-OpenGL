@@ -24,23 +24,23 @@ void main() {
     fragPos = vec3(model * vec4(aPos, 1.0));
     texCoord = aTexCoord;
     normalVec = mat3(transpose(inverse(model))) * aNormal;
+    gl_Position = projection * view * model * vec4(aPos, 1.0);
 
 
-    // Normal map
+    // Code correspondant a la normal Normal map (mais non fonctionnel => Voir FS)
     mat3 normalMatrix =  transpose(inverse(mat3(model)));
     vec3 T = normalize(normalMatrix * aTangent);
     vec3 N = normalize(normalMatrix * aNormal);
+    vec3 B = normalize(normalMatrix * aBitangent);
+
     //T = normalize(T - dot(T, N) * N);
     //vec3 B = cross(N, T);
-    vec3 B = normalize(normalMatrix * aBitangent);
+
     mat3 TBN = transpose(mat3(T, B, N));    
 
     TangentLightPos = TBN * lightPos;
     TangentViewPos  = TBN * viewPos;
     TangentFragPos  = TBN * fragPos;
-
-
-    gl_Position = projection * view * model * vec4(aPos, 1.0);
 }
     
   

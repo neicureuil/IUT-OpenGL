@@ -50,14 +50,17 @@ void BulletManager::init() {
 
 	verticeCount = vertices.size();
 
+	// Buffer des vertices
 	glGenBuffers(1, &bulletVertices);
 	glBindBuffer(GL_ARRAY_BUFFER, bulletVertices);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GLfloat), &vertices[0], GL_STATIC_DRAW);
 
+	// Buffer des positions des balles
 	glGenBuffers(1, &bulletPositions);
 	glBindBuffer(GL_ARRAY_BUFFER, bulletPositions);
 	glBufferData(GL_ARRAY_BUFFER, MAX_BULLETS * 3 * sizeof(GLfloat), NULL, GL_STREAM_DRAW);
 
+	// Buffer des couleurs des balles
 	glGenBuffers(1, &bulletColors);
 	glBindBuffer(GL_ARRAY_BUFFER, bulletColors);
 	glBufferData(GL_ARRAY_BUFFER, MAX_BULLETS * 3 * sizeof(GLfloat), NULL, GL_STREAM_DRAW);
@@ -84,14 +87,18 @@ void BulletManager::update(double dt) {
 	bulletNumber = 0;
 	for (size_t i = 0; i < MAX_BULLETS; i++) {
 		if (bullets[i].life > 0) {
+
 			Bullet& b = bullets[i];
 			b.life -= dt;
+			// Deplacement de la balle en fonction de sa direction et de sa vitesse
 			b.pos += b.dir * b.speed * (float)dt;
 
+			// Mise a jours de la position de la balle dans le buffer correspondant
 			g_buller_positions[3 * bulletNumber + 0] = b.pos.x;
 			g_buller_positions[3 * bulletNumber + 1] = b.pos.y;
 			g_buller_positions[3 * bulletNumber + 2] = b.pos.z;
 
+			// Mise a jours de la couleur de la balle dans le buffer correspondant
 			g_buller_colors[3 * bulletNumber + 0] = b.color.x;
 			g_buller_colors[3 * bulletNumber + 1] = b.color.y;
 			g_buller_colors[3 * bulletNumber + 2] = b.color.z;
@@ -121,6 +128,7 @@ void BulletManager::render(glm::mat4 view, glm::mat4 proj) {
 
 void BulletManager::addBullet(glm::vec3 pos, glm::vec3 dir) {
 	if (bulletNumber >= MAX_BULLETS) return;
+	// Ajout d'une balle => Met a jours les informations d'une balle non-utilisé dans le tableau de balles
 	bullets[bulletNumber].pos = pos;
 	bullets[bulletNumber].dir = dir;
 	bullets[bulletNumber].life = 5.0f;
@@ -129,5 +137,6 @@ void BulletManager::addBullet(glm::vec3 pos, glm::vec3 dir) {
 
 void BulletManager::removeBullet(size_t id) {
 	if (id >= MAX_BULLETS) return;
+	// Supprime une balle en mettant sa vie a -1
 	bullets[id].life = -1.0f;
 }

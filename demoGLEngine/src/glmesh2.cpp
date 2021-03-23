@@ -52,6 +52,7 @@ glMesh2::glMesh2(const std::vector<float>& vertices, const std::vector<float>& n
 glMesh2::glMesh2(const std::vector<float>& vertices, const std::vector<unsigned int>& indices, GLenum _usage)
 	:glMesh2(vertices.size() / 3, indices.size(), _usage) {
 
+	// Agrandissement du vecteur de vertices pour rajouter les 3 valeurs (x,z,y) des tangentes et des bitangentes
 	std::vector<float> newVertices;
 	for (size_t i = 0; i < vertices.size() / 8; i++) {
 		glm::vec3 pos1 = glm::vec3(vertices[i * 8 + 0], vertices[i * 8 + 1], vertices[i * 8 + 2]);
@@ -74,6 +75,7 @@ glMesh2::glMesh2(const std::vector<float>& vertices, const std::vector<unsigned 
 		newVertices.push_back(0);	
 	}
 
+	// Calcul des Tangentes et des Bitangentes
 	for (size_t i = 0; i < indices.size() / 3; i += 3) {
 		size_t i1 = indices[i * 3] * 14;
 		size_t i2 = indices[i * 3 + 1] * 14;

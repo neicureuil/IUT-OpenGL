@@ -18,7 +18,7 @@ void ParticleSystem::init() {
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
 
-
+    // Vertex du billboard de la particule
     static const GLfloat g_vertex_buffer_data[] = {
      -0.5f, -0.5f, 0.0f,
      0.5f, -0.5f, 0.0f,
@@ -26,14 +26,17 @@ void ParticleSystem::init() {
      0.5f, 0.5f, 0.0f,
     };
 
+    // Generation du buffer des vertex
     glGenBuffers(1, &billboard_vertex_buffer);
     glBindBuffer(GL_ARRAY_BUFFER, billboard_vertex_buffer);
     glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
 
+    // Generation du buffer de position (x, y, z)
     glGenBuffers(1, &particles_position_buffer);
     glBindBuffer(GL_ARRAY_BUFFER, particles_position_buffer);
     glBufferData(GL_ARRAY_BUFFER, max_particles * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW);
 
+    // Generation du buffer de vie (life, maxLife)
     glGenBuffers(1, &particles_life_buffer);
     glBindBuffer(GL_ARRAY_BUFFER, particles_life_buffer);
     glBufferData(GL_ARRAY_BUFFER, max_particles * 2 * sizeof(GLfloat), NULL, GL_STREAM_DRAW);
@@ -79,10 +82,8 @@ void ParticleSystem::sort() {
 }
 
 void ParticleSystem::simulate(const double& delta, const glm::vec3& camPos) {
+    // Generations de nouvelles particules
     int newparticles = (int)(delta * 10000.0);
-    if (newparticles > (int)(0.016f * 10000.0))
-        newparticles = (int)(0.016f * 10000.0);
-
     for (int i = 0; i < newparticles; i++) {
         int particleIndex = findUnused();
         particles[particleIndex].life = Utils::random(0, 3);
@@ -90,7 +91,7 @@ void ParticleSystem::simulate(const double& delta, const glm::vec3& camPos) {
         particles[particleIndex].pos = pos;
         particles[particleIndex].cameraDistance = -1;
 
-        float spread = 1.5f; //  1.5f 
+        float spread = 1.5f; 
         glm::vec3 maindir = glm::vec3(0.0f, 1.0f, 0.0f);
         glm::vec3 randomdir = glm::vec3(
             (rand() % 2000 - 1000.0f) / 1000.0f,
@@ -102,6 +103,7 @@ void ParticleSystem::simulate(const double& delta, const glm::vec3& camPos) {
         particles[particleIndex].size = (rand() % 1000) / 2000.0f + 0.1f;
     }
 
+    // Simulation des particules
     particle_count = 0;
     for (std::size_t i = 0; i < max_particles; i++) {
 
@@ -116,11 +118,13 @@ void ParticleSystem::simulate(const double& delta, const glm::vec3& camPos) {
                 p.pos += p.speed * (float)delta;
                 p.cameraDistance = glm::length2(p.pos - camPos);
 
+                // Update du buffer de position
                 g_particule_position_size_data[4 * particle_count + 0] = p.pos.x;
                 g_particule_position_size_data[4 * particle_count + 1] = p.pos.y;
                 g_particule_position_size_data[4 * particle_count + 2] = p.pos.z;
                 g_particule_position_size_data[4 * particle_count + 3] = p.size;
 
+                // Update du buffer de vie/vieMax
                 g_particule_life_data[2 * particle_count + 0] = (1.0f-p.life);
                 g_particule_life_data[2 * particle_count + 1] = p.maxLife;
 
@@ -139,10 +143,11 @@ void ParticleSystem::simulate(const double& delta, const glm::vec3& camPos) {
 
 void ParticleSystem::render(glm::mat4 ViewMatrix, glm::mat4  ProjectionMatrix) {
 
+    // Blend des particules
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    // Bind du shader des particules et definitions des valeurs
     shader.bind();
     shader.setInt("textureParticle", texId);
 
@@ -151,6 +156,8 @@ void ParticleSystem::render(glm::mat4 ViewMatrix, glm::mat4  ProjectionMatrix) {
     shader.setVec3("CameraUp_worldspace", ViewMatrix[0][1], ViewMatrix[1][1], ViewMatrix[2][1]);
     shader.setMat4("VP", ViewProjectionMatrix);
 
+
+    // Mise a jours des buffers
     glBindVertexArray(vao);
 
     glBindBuffer(GL_ARRAY_BUFFER, particles_position_buffer);
@@ -161,6 +168,7 @@ void ParticleSystem::render(glm::mat4 ViewMatrix, glm::mat4  ProjectionMatrix) {
 
     glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, particle_count);
 
-    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glDisable(GL_BLEND);
+    // Remise du blend a l'etat d'origin
+    //glDisable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }

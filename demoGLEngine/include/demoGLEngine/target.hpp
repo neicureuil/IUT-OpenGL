@@ -11,24 +11,39 @@
 #include "glmesh2.hpp"
 #include "bullet.hpp"
 
+/*
+* Classe qui represente une cible
+*/
 class Target {
 
 private:
-	float rot;
-	glm::vec3 pos, scale,realPos;
-	const Shader& shader;
-	const glMesh2& mesh;
+	float rot; // Rotation de la cible
+	glm::vec3 pos, scale,realPos; // Respectivement la position dans la scene, la taille et la position apres deplacement de la cible 
+	const Shader& shader; // Shader de la cible
+	const glMesh2& mesh; // Meshs de la cible
+	glm::mat4 model; // Matrice de transformation
 
 public:
 	Target(glm::vec3 _pos, const glMesh2& _mesh, const Shader& _shader);
 	~Target();
 
+	/*
+	* Fonction qui demande le rendu de la cible
+	*/
 	void render(glm::mat4 view, glm::mat4 proj);
+	/*
+	* Fonction qui demande la mise a jours de la cible au cours du temps
+	* (En particulier sa position)
+	*/
 	void update(double dt);
+	/*
+	* Fonction qui demande une deformation de la cible a un point précit.
+	*/
 	void setDeformation(glm::vec2 pos, glm::vec3 dir, float speed, glm::vec3 color);
 	
-	inline const glm::vec3 getPos() { return realPos; };
-	inline const glm::vec3 getScale() { return scale; };
-	inline const glm::vec2 getSize() { return glm::vec2(100,100); };
-	inline const float getRot() { return rot; };
+	inline const glm::vec3 getPos() const { return realPos; };
+	inline const glm::vec3 getScale() const { return scale; };
+	inline const glm::vec2 getSize() const { return glm::vec2(100,100); };
+	inline const float getRot() const { return rot; };
+	inline const glm::mat4& getModel() const { return model; };
 };

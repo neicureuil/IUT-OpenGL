@@ -35,11 +35,11 @@ public:
 	void loop();
 
 private:
-	std::vector<Cube> cubes;
-	BulletManager* bulletManager;
-	CollisionManager* collisionManager;
-	Target* target;
-	ParticleSystem* particles;
+	std::vector<Cube> cubes; // Vecteurs des cubes de la scene
+	BulletManager* bulletManager; // Gestionnaire des balles
+	CollisionManager* collisionManager; // Gestionnaire de collision
+	Target* target; // La cible de la scene
+	ParticleSystem* particles; // Systeme de particule de feu dans la scene
 
 private:
 	enum class DisplayStyle { normal, depthBuffer, Foggy, NightVision };
@@ -53,7 +53,13 @@ private:
 	void buildGeometry();
 	void initGLFWCallBack();
 
+	/*
+	* Fonction qui initialise tous les composants crées et utilisé pendant le projet
+	*/
 	void buildProject();
+	/* 
+	* Fonction appelé lors que l'on desir tirer une balle
+	*/
 	void shoot();
 	
 

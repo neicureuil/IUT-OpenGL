@@ -6,7 +6,10 @@
 #include <string>
 #include <vector>
 
-
+/*
+* Copie quasie conforme de glMesh de glEngine
+* Calcul en plus les tangentes et les bi-tangentes
+*/
 class glMesh2 {
 public:
     glMesh2();

@@ -123,7 +123,7 @@ void MyApp::processInput() {
 }
 
 void MyApp::buildProject() {
-	// Generation des cubes 
+	// Generation des cubes de la scene
 	cubes = {
 		Cube(glm::vec3(0.0f,  0.5f,  0.0f), 0.0f, glm::vec3(1.0f, 0.5f, 0.31f)),
 		Cube(glm::vec3(1.1f, 0.5f, 0.0f), -4.0f, glm::vec3(0.18f, 0.73f, 0.69f)),
@@ -138,7 +138,7 @@ void MyApp::buildProject() {
 	};
 
 	// Configuration des composants du projets
-	target = new Target(glm::vec3(-10, 3.5f, -10), meshes["target"], shaders["targetShader"]);
+	target = new Target(glm::vec3(-20, 3.5f, -10), meshes["target"], shaders["targetShader"]);
 	bulletManager = new BulletManager(shaders["bulletShader"]);
 	collisionManager = new CollisionManager();
 	particles = new ParticleSystem(glm::vec3(1.5f, 1.0f, 3.5f), shaders["particleShader"], 12);
@@ -319,9 +319,15 @@ void MyApp::loop() {
 }
 
 void MyApp::update(const double& dt) {
-	bulletManager->update(dt);
+	// Appel des fonctions d'update des differents composants du projets
+
+	// Update de la cible
 	target->update(glfwGetTime());
+	// Update des balles
+	bulletManager->update(dt);
+	// Verification des collisions
 	collisionManager->testTargetCollisions(target, bulletManager, cubes);
+	// Simulation des particules
 	particles->simulate(dt, camera->Position);
 }
 
@@ -555,15 +561,9 @@ void MyApp::renderScene() {
 	meshes["box"].bind();
 
 	for (unsigned int i = 0; i < cubes.size(); i++) {
-		// calculate the model matrix for each object and pass it to shader before drawing
-		model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-		model = glm::translate(model, cubes[i].getPos());
-		model = glm::rotate(model, glm::radians(cubes[i].getRot()), glm::vec3(0.0f, 1.0f, 0.0f));
-		boxShader.setMat4("model", model);
-
+		boxShader.setMat4("model", cubes[i].getModel());
 		boxShader.setVec3("material.ambient", glm::vec3(1.0));
 		boxShader.setVec3("material.diffuse", cubes[i].getColor());
-
 		meshes["box"].render();
 	}
 
@@ -602,8 +602,11 @@ void MyApp::renderScene() {
 	ground.bind();
 	ground.render();
 
+	// Affichage de la cible
 	target->render(view, projection);
+	// Affichage des balles
 	bulletManager->render(view, projection);
+	// Affichage des particules de feu
 	particles->render(view, projection);
 }
 
