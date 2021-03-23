@@ -14,7 +14,6 @@ Target::~Target() {
 }
 
 void Target::update(double dt) {
-	/*
 	rot += cos(dt);
 
 	double speed = 0.4 * sin(0.1 * dt) * 1 * cos(0.25 * dt);
@@ -22,7 +21,7 @@ void Target::update(double dt) {
 
 	realPos.x = pos.x + (8 * sin(dt));
 	realPos.z = pos.z + ((5 + 0.125 *sin(32*dt)) * cos(0.5*dt));
-	*/
+	
 }
 
 void Target::render(glm::mat4 view, glm::mat4 proj) {

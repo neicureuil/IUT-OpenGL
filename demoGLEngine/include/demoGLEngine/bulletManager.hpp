@@ -20,6 +20,7 @@ private:
 	GLuint vao;
 	GLuint bulletVertices;
 	GLuint bulletPositions;
+	GLuint bulletColors;
 	size_t verticeCount;
 
 	const double SPHERE_RADIUS = 0.5;
@@ -29,6 +30,7 @@ private:
 
 	Bullet* bullets = nullptr;
 	GLfloat* g_buller_positions;
+	GLfloat* g_buller_colors;
 
 	const Shader& shader;
 

@@ -3,6 +3,7 @@
 BulletManager::BulletManager(const Shader& _shader) : shader(_shader) {
 	bullets = new Bullet[MAX_BULLETS];
 	g_buller_positions = new GLfloat[MAX_BULLETS * 3];
+	g_buller_colors = new GLfloat[MAX_BULLETS * 3];;
 
 	init();
 }
@@ -10,14 +11,16 @@ BulletManager::BulletManager(const Shader& _shader) : shader(_shader) {
 BulletManager::~BulletManager() {
 	delete[] bullets;
 	delete[] g_buller_positions;
+	delete[] g_buller_colors;
 }
 
 void BulletManager::init() {
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 	
-	std::vector<GLfloat> vertices;
 
+	// Generations des vertices de la sphere (discrétisation)
+	std::vector<GLfloat> vertices;
 	int lats = 20;
 	int longs = 20;
 
@@ -55,6 +58,10 @@ void BulletManager::init() {
 	glBindBuffer(GL_ARRAY_BUFFER, bulletPositions);
 	glBufferData(GL_ARRAY_BUFFER, MAX_BULLETS * 3 * sizeof(GLfloat), NULL, GL_STREAM_DRAW);
 
+	glGenBuffers(1, &bulletColors);
+	glBindBuffer(GL_ARRAY_BUFFER, bulletColors);
+	glBufferData(GL_ARRAY_BUFFER, MAX_BULLETS * 3 * sizeof(GLfloat), NULL, GL_STREAM_DRAW);
+
 	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, bulletVertices);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
@@ -63,8 +70,14 @@ void BulletManager::init() {
 	glBindBuffer(GL_ARRAY_BUFFER, bulletPositions);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
+	glEnableVertexAttribArray(2);
+	glBindBuffer(GL_ARRAY_BUFFER, bulletColors);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+
 	glVertexAttribDivisor(0, 0);
 	glVertexAttribDivisor(1, 1);
+	glVertexAttribDivisor(2, 1);
 }
 
 void BulletManager::update(double dt) {
@@ -78,6 +91,10 @@ void BulletManager::update(double dt) {
 			g_buller_positions[3 * bulletNumber + 0] = b.pos.x;
 			g_buller_positions[3 * bulletNumber + 1] = b.pos.y;
 			g_buller_positions[3 * bulletNumber + 2] = b.pos.z;
+
+			g_buller_colors[3 * bulletNumber + 0] = b.color.x;
+			g_buller_colors[3 * bulletNumber + 1] = b.color.y;
+			g_buller_colors[3 * bulletNumber + 2] = b.color.z;
 			
 			bulletNumber++;
 		}
@@ -95,6 +112,9 @@ void BulletManager::render(glm::mat4 view, glm::mat4 proj) {
 
 	glBindBuffer(GL_ARRAY_BUFFER, bulletPositions);
 	glBufferData(GL_ARRAY_BUFFER, MAX_BULLETS * 3 * sizeof(GLfloat), g_buller_positions, GL_STREAM_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, bulletColors);
+	glBufferData(GL_ARRAY_BUFFER, MAX_BULLETS * 3 * sizeof(GLfloat), g_buller_colors, GL_STREAM_DRAW);
 
 	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, verticeCount, bulletNumber);
 }
