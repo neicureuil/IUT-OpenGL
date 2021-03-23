@@ -1,7 +1,6 @@
 #version 330 core
 
 in vec2 UV;
-in vec4 particlecolor;
 
 uniform sampler2D textureParticle;
 

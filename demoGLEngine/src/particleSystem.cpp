@@ -4,7 +4,6 @@ ParticleSystem::ParticleSystem(glm::vec3 _pos, const Shader& _shader, int _texId
     particles = std::make_unique<Particle[]>(max_particles);
 
     g_particule_position_size_data = new GLfloat[max_particles * 4];
-    g_particule_color_data = new GLubyte[max_particles * 4];
     g_particule_life_data = new GLfloat[max_particles * 2];
 
     init();
@@ -35,10 +34,6 @@ void ParticleSystem::init() {
     glBindBuffer(GL_ARRAY_BUFFER, particles_position_buffer);
     glBufferData(GL_ARRAY_BUFFER, max_particles * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW);
 
-    glGenBuffers(1, &particles_color_buffer);
-    glBindBuffer(GL_ARRAY_BUFFER, particles_color_buffer);
-    glBufferData(GL_ARRAY_BUFFER, max_particles * 4 * sizeof(GLubyte), NULL, GL_STREAM_DRAW);
-
     glGenBuffers(1, &particles_life_buffer);
     glBindBuffer(GL_ARRAY_BUFFER, particles_life_buffer);
     glBufferData(GL_ARRAY_BUFFER, max_particles * 2 * sizeof(GLfloat), NULL, GL_STREAM_DRAW);
@@ -53,17 +48,12 @@ void ParticleSystem::init() {
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
     glEnableVertexAttribArray(2);
-    glBindBuffer(GL_ARRAY_BUFFER, particles_color_buffer);
-    glVertexAttribPointer(2, 4, GL_UNSIGNED_BYTE, GL_TRUE, 0, (void*)0);
-
-    glEnableVertexAttribArray(3);
     glBindBuffer(GL_ARRAY_BUFFER, particles_life_buffer);
-    glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
     glVertexAttribDivisor(0, 0);
     glVertexAttribDivisor(1, 1);
     glVertexAttribDivisor(2, 1);
-    glVertexAttribDivisor(3, 1);
 }
 
 std::size_t ParticleSystem::findUnused() {
@@ -98,9 +88,10 @@ void ParticleSystem::simulate(const double& delta, const glm::vec3& camPos) {
         particles[particleIndex].life = Utils::random(0, 3);
         particles[particleIndex].maxLife = particles[particleIndex].life;
         particles[particleIndex].pos = pos;
+        particles[particleIndex].cameraDistance = -1;
 
-        float spread = Utils::random(1, 2); //  1.5f 
-        glm::vec3 maindir = glm::vec3(0.0f, 10.0f, 0.0f);
+        float spread = 1.5f; //  1.5f 
+        glm::vec3 maindir = glm::vec3(0.0f, 1.0f, 0.0f);
         glm::vec3 randomdir = glm::vec3(
             (rand() % 2000 - 1000.0f) / 1000.0f,
             (rand() % 2000 - 1000.0f) / 1000.0f,
@@ -108,16 +99,7 @@ void ParticleSystem::simulate(const double& delta, const glm::vec3& camPos) {
         );
 
         particles[particleIndex].speed = maindir + randomdir * spread;
-
-
-        // Very bad way to generate a random color
-        particles[particleIndex].r = rand() % 256;
-        particles[particleIndex].g = rand() % 256;
-        particles[particleIndex].b = rand() % 256;
-        particles[particleIndex].a = (rand() % 256) / 3;
-
         particles[particleIndex].size = (rand() % 1000) / 2000.0f + 0.1f;
-
     }
 
     particle_count = 0;
@@ -137,13 +119,7 @@ void ParticleSystem::simulate(const double& delta, const glm::vec3& camPos) {
                 g_particule_position_size_data[4 * particle_count + 0] = p.pos.x;
                 g_particule_position_size_data[4 * particle_count + 1] = p.pos.y;
                 g_particule_position_size_data[4 * particle_count + 2] = p.pos.z;
-
                 g_particule_position_size_data[4 * particle_count + 3] = p.size;
-
-                g_particule_color_data[4 * particle_count + 0] = p.r;
-                g_particule_color_data[4 * particle_count + 1] = p.g;
-                g_particule_color_data[4 * particle_count + 2] = p.b;
-                g_particule_color_data[4 * particle_count + 3] = p.a;
 
                 g_particule_life_data[2 * particle_count + 0] = (1.0f-p.life);
                 g_particule_life_data[2 * particle_count + 1] = p.maxLife;
@@ -180,14 +156,11 @@ void ParticleSystem::render(glm::mat4 ViewMatrix, glm::mat4  ProjectionMatrix) {
     glBindBuffer(GL_ARRAY_BUFFER, particles_position_buffer);
     glBufferData(GL_ARRAY_BUFFER, max_particles * 4 * sizeof(GLfloat), g_particule_position_size_data, GL_STREAM_DRAW);
 
-    glBindBuffer(GL_ARRAY_BUFFER, particles_color_buffer);
-    glBufferData(GL_ARRAY_BUFFER, max_particles * 4 * sizeof(GLubyte), g_particule_color_data, GL_STREAM_DRAW);
-
     glBindBuffer(GL_ARRAY_BUFFER, particles_life_buffer);
     glBufferData(GL_ARRAY_BUFFER, max_particles * 2 * sizeof(GLfloat), g_particule_life_data, GL_STREAM_DRAW);
 
     glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, particle_count);
 
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    //glDisable(GL_BLEND);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDisable(GL_BLEND);
 }

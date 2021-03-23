@@ -17,6 +17,7 @@
 #include "target.hpp"
 #include "glmesh2.hpp"
 #include "particleSystem.hpp"
+#include "cube.hpp"
 
 #include <unordered_map>
 
@@ -34,6 +35,7 @@ public:
 	void loop();
 
 private:
+	std::vector<Cube> cubes;
 	BulletManager* bulletManager;
 	CollisionManager* collisionManager;
 	Target* target;
@@ -51,6 +53,7 @@ private:
 	void buildGeometry();
 	void initGLFWCallBack();
 
+	void buildProject();
 	void shoot();
 	
 

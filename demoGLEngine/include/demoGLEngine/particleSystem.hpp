@@ -37,13 +37,11 @@ private:
 
 	GLuint billboard_vertex_buffer;
 	GLuint particles_position_buffer;
-	GLuint particles_color_buffer;
 	GLuint particles_life_buffer;
 
 	const Shader& shader;
 
 	GLfloat* g_particule_position_size_data;
-	GLubyte* g_particule_color_data;
 	GLfloat* g_particule_life_data;
 
 	std::unique_ptr<Particle[]> particles;

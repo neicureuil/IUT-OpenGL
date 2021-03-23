@@ -10,10 +10,13 @@ uniform mat4 projection;
 uniform bool hasDeformation;
 uniform vec2 deformationPos;
 uniform vec3 deformationDir;
+uniform vec3 deformationColor;
+uniform float deformationSpeed;
 
 out vec3 normalVec;  
 out vec2 texCoord;
 out float isDeformed;
+out vec3 defColor;
 
 void main() {
     
@@ -23,12 +26,13 @@ void main() {
     vec3 defPos = vec3(1-deformationPos.x, 1-deformationPos.y, 0.0);
 
     isDeformed = 0.0;
+    defColor = deformationColor;
 
     if(hasDeformation) {
-        float d = distance(vec4(defPos, 1.0), vec4(pPos, 1.0));
+        float d = distance(defPos, pPos);
         if (d < 0.1) {
             isDeformed = 1.0;
-		    gPos.xyz = gPos.xyz + 5.0 * deformationDir.xyz;
+		    //gPos.xyz = gPos + deformationSpeed * deformationDir;
 	    }
     }
     

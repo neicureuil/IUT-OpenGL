@@ -104,6 +104,7 @@ void BulletManager::addBullet(glm::vec3 pos, glm::vec3 dir) {
 	bullets[bulletNumber].pos = pos;
 	bullets[bulletNumber].dir = dir;
 	bullets[bulletNumber].life = 5.0f;
+	bullets[bulletNumber].color = glm::vec3(Utils::random(), Utils::random(), Utils::random());
 }
 
 void BulletManager::removeBullet(size_t id) {

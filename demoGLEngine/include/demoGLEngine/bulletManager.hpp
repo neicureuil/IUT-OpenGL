@@ -12,6 +12,7 @@
 
 #include "glengine/shader.hpp"
 #include "bullet.hpp"
+#include "utils.hpp"
 
 class BulletManager {
 

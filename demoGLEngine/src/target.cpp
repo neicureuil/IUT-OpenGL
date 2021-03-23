@@ -2,7 +2,7 @@
 #include <iostream>
 
 Target::Target(glm::vec3 _pos, const glMesh2& _mesh, const Shader& _shader)
-	: pos(_pos), scale(glm::vec3(0.07f)), realPos(_pos), mesh(_mesh), shader(_shader) {
+	: pos(_pos), scale(glm::vec3(0.07f)), realPos(_pos), mesh(_mesh), shader(_shader), rot(72) {
 
 	shader.bind();
 	shader.setInt("textureTarget", 11);
@@ -14,11 +14,15 @@ Target::~Target() {
 }
 
 void Target::update(double dt) {
+	/*
+	rot += cos(dt);
+
 	double speed = 0.4 * sin(0.1 * dt) * 1 * cos(0.25 * dt);
 	dt *= speed;
 
 	realPos.x = pos.x + (8 * sin(dt));
 	realPos.z = pos.z + ((5 + 0.125 *sin(32*dt)) * cos(0.5*dt));
+	*/
 }
 
 void Target::render(glm::mat4 view, glm::mat4 proj) {
@@ -29,6 +33,7 @@ void Target::render(glm::mat4 view, glm::mat4 proj) {
 
 	glm::mat4 model = glm::mat4(1.0f);
 	model = glm::translate(model, realPos);
+	model = glm::rotate(model, glm::radians(rot), glm::vec3(0.0f, 1.0f, 0.0f));
 	model = glm::scale(model, scale);
 	shader.setMat4("model", model);
 
@@ -36,9 +41,11 @@ void Target::render(glm::mat4 view, glm::mat4 proj) {
 	mesh.render();
 }
 
-void Target::setDeformation(glm::vec2 pos, glm::vec3 dir) {
+void Target::setDeformation(glm::vec2 pos, glm::vec3 dir, float speed, glm::vec3 color) {
 	shader.bind();
 	shader.setBool("hasDeformation", true);
 	shader.setVec2("deformationPos", pos);
 	shader.setVec3("deformationDir", dir);
+	shader.setFloat("deformationSpeed", speed);
+	shader.setVec3("deformationColor", color);
 }

@@ -26,6 +26,7 @@ set(SRC
 	${SRC_DIR}/collisionManager.cpp
 	${SRC_DIR}/target.cpp
 	${SRC_DIR}/glmesh2.cpp
+	${SRC_DIR}/cube.cpp
 )
 
 
@@ -42,6 +43,7 @@ set(HEADER
 	${INC_DIR}/${PROJECT_NAME}/collisionManager.hpp
 	${INC_DIR}/${PROJECT_NAME}/target.hpp
 	${INC_DIR}/${PROJECT_NAME}/glmesh2.hpp
+	${INC_DIR}/${PROJECT_NAME}/cube.hpp
 )
 
 set(RESOURCE_FILES	

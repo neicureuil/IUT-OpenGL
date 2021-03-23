@@ -122,6 +122,28 @@ void MyApp::processInput() {
 	}	
 }
 
+void MyApp::buildProject() {
+	// Generation des cubes 
+	cubes = {
+		Cube(glm::vec3(0.0f,  0.5f,  0.0f), 0.0f, glm::vec3(1.0f, 0.5f, 0.31f)),
+		Cube(glm::vec3(1.1f, 0.5f, 0.0f), -4.0f, glm::vec3(0.18f, 0.73f, 0.69f)),
+		Cube(glm::vec3(0.5f, 0.5f, 1.17f), 10.0f, glm::vec3(0.97f, 0.79f, 0.31f)),
+		Cube(glm::vec3(0.5f, 1.5f, 0.5f), -25.0f, glm::vec3(0.45f, 0.6f, 0.51f)),
+		Cube(glm::vec3(2.4f, 0.5f, -3.5f), -70.0f, glm::vec3(0.72f, 0.22f, 0.22f)),
+		Cube(glm::vec3(-1.7f, 0.5f, 3.5f), -10.0f, glm::vec3(0.36f, 0.83f, 0.36f)),
+		Cube(glm::vec3(-1.3f, 0.5f, 2.3f), 15.0f, glm::vec3(0.0f, 0.51f, 0.76f)),
+		Cube(glm::vec3(-2.7f, 0.5f, 2.5f), -30.0f, glm::vec3(0.87f, 0.56f, 0.64f)),
+		Cube(glm::vec3(-2.0f, 1.5f, 2.8f), -35.0f, glm::vec3(0.99f, 0.65f, 0.02f)),
+		Cube(glm::vec3(1.5f, 0.5f, 3.5f), 45.0f, glm::vec3(0.95f, 1.0f, 0.9f))
+	};
+
+	// Configuration des composants du projets
+	target = new Target(glm::vec3(-10, 3.5f, -10), meshes["target"], shaders["targetShader"]);
+	bulletManager = new BulletManager(shaders["bulletShader"]);
+	collisionManager = new CollisionManager();
+	particles = new ParticleSystem(glm::vec3(1.5f, 1.0f, 3.5f), shaders["particleShader"], 12);
+}
+
 void MyApp::buildGeometry() {
 	shaders["boxShader"] = Shader(
 		std::string(_resources_directory).append("shaders/lighting.vert").c_str(),
@@ -266,12 +288,7 @@ void MyApp::loop() {
 	
 	buildGeometry();
 	frameBufferConfiguration();
-
-	// configure app component
-	target = new Target(glm::vec3(-10, 3.5f, -10), meshes["target"], shaders["targetShader"]);
-	bulletManager = new BulletManager(shaders["bulletShader"]);
-	collisionManager = new CollisionManager();
-	particles = new ParticleSystem(glm::vec3(-5, 0, -5), shaders["particleShader"], 12);
+	buildProject();
 
 	double lag = 0.0;
 	while (!glfwWindowShouldClose(window)) {
@@ -304,7 +321,7 @@ void MyApp::loop() {
 void MyApp::update(const double& dt) {
 	bulletManager->update(dt);
 	target->update(glfwGetTime());
-	collisionManager->testTargetCollisions(target, bulletManager);
+	collisionManager->testTargetCollisions(target, bulletManager, cubes);
 	particles->simulate(dt, camera->Position);
 }
 
@@ -532,64 +549,20 @@ void MyApp::renderScene() {
 	glm::mat4 view = camera->GetViewMatrix();
 	boxShader.setMat4("view", view);
 
-
-	unsigned int nbCubes = 10;
-	glm::vec3 cubePositions[] = {
-		glm::vec3(0.0f,  0.5f,  0.0f),
-		glm::vec3(1.1f,  0.5f, 0.0f),
-		glm::vec3(0.5f, 0.5f, 1.17f),
-		glm::vec3(0.5f, 1.5f, 0.5f),
-		glm::vec3(2.4f, 0.5f, -3.5f),
-		glm::vec3(-1.7f,  0.5f, 3.5f),
-		glm::vec3(-1.3f, 0.5f, 2.3f),
-		glm::vec3(-2.7f,  0.5f, 2.5f),
-		glm::vec3(-2.0f,  1.5f, 2.8f),
-		glm::vec3(1.5f,  0.5f, 3.5f)
-	};
-
-	float cubeRotation[] = {
-		0.0f,
-		-4.0f,
-		10.0f,
-		-25.0f,
-		-70.0f,
-		-10.0f,
-		15.0f,
-		-30.0f,
-		-35.0f,
-		45.0f
-	};
-
-	
-	// cubes colors
-	glm::vec3 cubeColors[] = {
-		glm::vec3(1.0f, 0.5f, 0.31f),
-		glm::vec3(0.18f, 0.73f, 0.69f),
-		glm::vec3(0.97f, 0.79f, 0.31f),
-		glm::vec3(0.45f, 0.6f, 0.51f),
-		glm::vec3(0.72f, 0.22f, 0.22f),
-		glm::vec3(0.36f, 0.83f, 0.36f),
-		glm::vec3(0.0f, 0.51f, 0.76f),
-		glm::vec3(0.87f, 0.56f, 0.64f),
-		glm::vec3(0.99f, 0.65f, 0.02f),
-		glm::vec3(0.95f, 1.0f, 0.9f)
-	};
-
-
 	glm::mat4  model = glm::mat4(1.0f);
 
 	// glBindVertexArray(VAO);
 	meshes["box"].bind();
 
-	for (unsigned int i = 0; i < nbCubes; i++) {
+	for (unsigned int i = 0; i < cubes.size(); i++) {
 		// calculate the model matrix for each object and pass it to shader before drawing
 		model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-		model = glm::translate(model, cubePositions[i]);
-		model = glm::rotate(model, glm::radians(cubeRotation[i]), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::translate(model, cubes[i].getPos());
+		model = glm::rotate(model, glm::radians(cubes[i].getRot()), glm::vec3(0.0f, 1.0f, 0.0f));
 		boxShader.setMat4("model", model);
 
 		boxShader.setVec3("material.ambient", glm::vec3(1.0));
-		boxShader.setVec3("material.diffuse", cubeColors[i]);
+		boxShader.setVec3("material.diffuse", cubes[i].getColor());
 
 		meshes["box"].render();
 	}

@@ -36,8 +36,8 @@ in vec3 TangentFragPos;
 void main() {
 
     // Normal Map
-    vec3 normal = texture(textureNormal, texCoord).rgb;
-    normal = normalize(normal * 2.0 - 1.0);  
+    //vec3 normal = texture(textureNormal, texCoord).rgb;
+    //normal = normalize(normal * 2.0 - 1.0);  
 
     // Diffuse textureDiffuse
     vec3 diffTexture = material.ambient * (vec3(texture(textureDiffuse, texCoord)) * material.diffuse * (( vec3(1.0) - vec3(texture(textureMask, texCoord)) )) + vec3(texture(textureMask, texCoord)) * vec3(texture(textureDiffuse, texCoord)));
@@ -46,22 +46,22 @@ void main() {
     vec3 ambient = light.ambient * diffTexture;
 
     // Diffuse
-    //vec3 norm = normalize(normalVec);
-    //vec3 lightDir = normalize(light.position - fragPos); 
-    vec3 lightDir = normalize(TangentLightPos - TangentFragPos);
+    vec3 norm = normalize(normalVec);
+    vec3 lightDir = normalize(light.position - fragPos); 
+    //vec3 lightDir = normalize(TangentLightPos - TangentFragPos);
 
-    //float diff = max(dot(norm, lightDir), 0.0);
-    float diff = max(dot(lightDir, normal), 0.0);
+    float diff = max(dot(norm, lightDir), 0.0);
+    //float diff = max(dot(lightDir, normal), 0.0);
     vec3 diffuse = light.diffuse  *  diff * diffTexture;
 
     // Specular
-    //vec3 viewDir = normalize(viewPos - fragPos);
-    //vec3 reflectDir = reflect(-lightDir, norm);  
-    vec3 viewDir = normalize(TangentViewPos - TangentFragPos);
-    vec3 halfwayDir = normalize(lightDir + viewDir);  
+    vec3 viewDir = normalize(viewPos - fragPos);
+    vec3 reflectDir = reflect(-lightDir, norm);  
+    //vec3 viewDir = normalize(TangentViewPos - TangentFragPos);
+    //vec3 halfwayDir = normalize(lightDir + viewDir);  
 
-    float spec = pow(max(dot(normal, halfwayDir), 0.0), material.shininess);
-    //float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    //float spec = pow(max(dot(normal, halfwayDir), 0.0), material.shininess);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
     vec3 specular = light.specular * (spec * material.specular * vec3(texture(textureSpecular, texCoord)));
 
     vec3 result = (ambient + diffuse + specular);
